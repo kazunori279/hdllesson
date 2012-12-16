@@ -1,9 +1,7 @@
 module MIDI (
 	input CLK,
 	input MIDI_IN,
-	output [7:0] MIDI_STATUS,
-	output [7:0] MIDI_DATA1,
-	output [7:0] MIDI_DATA2,
+	output [23:0] MIDI_MSG,
 	output MIDI_MSG_RDY
 );
 
@@ -69,9 +67,20 @@ always @(posedge CLK) begin
 		endcase
 	end 
 end
-assign MIDI_STATUS = midi_status;
-assign MIDI_DATA1 = midi_data1;
-assign MIDI_DATA2 = midi_data2;
-assign MIDI_MSG_RDY = dec_cnt == 38 & midi_msg_cnt == 0;
+assign MIDI_MSG = {midi_status, midi_data1, midi_data2};
+assign midi_msg_rdy = dec_cnt == 38 & midi_msg_cnt == 0;
+
+// generate one shot trigger when midi message is ready
+reg [8:0] midi_msg_rdy_cnt;
+always @(posedge CLK) begin
+	if (midi_msg_rdy) begin
+		if (midi_msg_rdy_cnt == 400)
+			midi_msg_rdy_cnt = 0;
+		else
+			midi_msg_rdy_cnt = midi_msg_rdy_cnt + 1;
+	end else
+		midi_msg_rdy_cnt = 0;
+end
+assign MIDI_MSG_RDY = midi_msg_rdy_cnt == 1;
 
 endmodule

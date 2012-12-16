@@ -1,6 +1,6 @@
 module SPI (
 	input ICLK,
-	input [7:0] DAT,
+	input [11:0] DAT,
 	output nCS,
 	output SDI
 );
@@ -29,7 +29,7 @@ module SPI (
 	always @(negedge ICLK) begin
 		if (cnt == 5'd17) begin
 			// load command and data into sreg
-			sreg = {4'b1111, DAT, 4'b0000};
+			sreg = {4'b1111, DAT};
 		end
 		else begin
 			// shift
