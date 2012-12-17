@@ -19,7 +19,8 @@ reg [15:0] current_steps;
 reg [7:0] current_note;
 always @(posedge CLK) begin
 	if (MIDI_MSG_RDY) begin
-		if (midi_status == 8'h90) begin // note-on msg
+		// note on
+		if (midi_status == 8'h90 && midi_data2 != 0) begin // status 90h (except for velocity == 0)
 			if (note_on)
 				midi_msg_thru = 1; // if this wg is buzy, pass thru the note-on msg
 			else begin
@@ -29,7 +30,10 @@ always @(posedge CLK) begin
 				current_steps = steps(midi_data1);
 			end
 		end
-		else if (midi_status == 8'h80 && midi_data1 == current_note) begin // note-off msg
+		// note off
+		else if ((midi_status == 8'h80 && midi_data1 == current_note) || // status 80h
+				(midi_status == 8'h90 && midi_data1 == current_note && midi_data2 == 8'h00) || // status 90h + velocity == 0
+				(midi_status == 8'hB0 && midi_data1 == 8'h7b)) begin // all notes off
 			midi_msg_thru = 1;
 			note_on = 0;
 		end else
