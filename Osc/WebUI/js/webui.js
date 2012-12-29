@@ -36,7 +36,7 @@ function updateAdsr() {
 
 // init knobs
 $(".dial").knob({
-	"release" : function(val) {
+	"change" : function(val) {
 		updateAdsr();
 	}
 });

@@ -64,7 +64,10 @@ always @(posedge CLK) begin
 
 	// enverope control counter
 	if (env_cnt == 0)
-		env_cnt = 4000 * env_cnt_speed;
+		if (env_cnt_speed == 0) // to prevent click noise
+			env_cnt = 500;
+		else
+			env_cnt = 1000 * env_cnt_speed;
 	else
 		env_cnt = env_cnt - 1;
 
