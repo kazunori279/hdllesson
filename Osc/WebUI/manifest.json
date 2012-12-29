@@ -1,0 +1,13 @@
+{
+  "name": "Osc Web UI",
+  "description": "Osc Web UI",
+  "version": "0.1",
+  "app": {
+    "background": {
+      "scripts": [
+	"js/background.js"
+      ]
+    }
+  },
+  "permissions": ["serial"]
+}

@@ -2,6 +2,7 @@ module WaveGen (
 	input CLK,
 	input [23:0] MIDI_MSG,
 	input MIDI_MSG_RDY,
+	input [31:0] ENV_PARAMS,
 	output MIDI_MSG_THRU,
 	output NOTE_ON,
 	output [7:0] DAT
@@ -13,35 +14,87 @@ wire [7:0] midi_data1 = MIDI_MSG[15:8];
 wire [7:0] midi_data2 = MIDI_MSG[7:0];
 
 // captures note on message on MIDI ch 0
-reg note_on;
-reg midi_msg_thru;
-reg [15:0] current_steps;
-reg [7:0] current_note;
+reg note_on; // MIDI note-on status
+reg midi_msg_thru; // Flag for passing through MIDI message to next WaveGen
+reg [7:0] cur_note; // MIDI note
+reg [7:0] cur_velocity; // MIDI velocity
+reg [15:0] cur_steps; // number of steps for the current MIDI note
+
+// registers for envelope control
+reg [19:0] env_cnt; // counter for enverope control
+reg [7:0] env_cnt_speed; // enverope 
+reg [1:0] env_st; // enverope status (0 = off, 1 = attack, 2 = decay/sus, 3 = release)
+reg [7:0] cur_vol; // current volume
+wire [7:0] att_val = ENV_PARAMS[31:24]; // attack time
+wire [7:0] dec_val = ENV_PARAMS[23:16]; // decay time
+wire [7:0] sus_val = ENV_PARAMS[15:8]; // sustain volume
+wire [7:0] rel_val = ENV_PARAMS[7:0]; // release time
+
 always @(posedge CLK) begin
+
+	// MIDI message handling
 	if (MIDI_MSG_RDY) begin
 		// note on
 		if (midi_status == 8'h90 && midi_data2 != 0) begin // status 90h (except for velocity == 0)
-			if (note_on)
+			if (cur_vol != 0)
 				midi_msg_thru = 1; // if this wg is buzy, pass thru the note-on msg
 			else begin
 				midi_msg_thru = 0; // if this wg is not busy, take the note-on msg
 				note_on = 1; 
-				current_note = midi_data1;
-				current_steps = steps(midi_data1);
+				cur_note = midi_data1;
+				cur_steps = steps(midi_data1);
+				cur_velocity = midi_data2;
+				env_st = 1;
+				env_cnt_speed = att_val;
+				cur_vol = 1;
 			end
 		end
 		// note off
-		else if ((midi_status == 8'h80 && midi_data1 == current_note) || // status 80h
-				(midi_status == 8'h90 && midi_data1 == current_note && midi_data2 == 8'h00) || // status 90h + velocity == 0
+		else if ((midi_status == 8'h80 && midi_data1 == cur_note) || // status 80h
+				(midi_status == 8'h90 && midi_data1 == cur_note && midi_data2 == 8'h00) || // status 90h + velocity == 0
 				(midi_status == 8'hB0 && midi_data1 == 8'h7b)) begin // all notes off
 			midi_msg_thru = 1;
 			note_on = 0;
+			env_st = 3;
+			env_cnt_speed = rel_val;
 		end else
 			midi_msg_thru = 1;
 	end else
 		midi_msg_thru = 0;
+
+	// enverope control counter
+	if (env_cnt == 0)
+		env_cnt = 4000 * env_cnt_speed;
+	else
+		env_cnt = env_cnt - 1;
+
+	// enverope control
+	if (env_cnt == 0)
+		case (env_st)
+			0:; // note off
+			1:	// attack
+				begin
+					if (cur_vol == 255) begin
+						env_st <= 2;
+						env_cnt_speed <= dec_val;
+					end else
+						cur_vol <= cur_vol + 1;
+				end
+			2:	// decay/sustain
+				begin
+					if (cur_vol > sus_val)
+						cur_vol <= cur_vol - 1;
+				end
+			3:	// release
+				begin
+					if (cur_vol > 0)
+						cur_vol <= cur_vol - 1;
+					else
+						env_st <= 0;
+				end
+		endcase
 end
-assign NOTE_ON = note_on;
+assign NOTE_ON = env_st != 0;
 assign MIDI_MSG_THRU = midi_msg_thru;
 
 // clock for each step
@@ -49,7 +102,7 @@ reg [15:0] cnt;
 wire stepclk;
 always @(posedge CLK) begin
 	if (cnt == 0)
-		cnt = current_steps;
+		cnt = cur_steps;
 	else 
 		cnt = cnt - 1;
 end
@@ -57,13 +110,18 @@ assign stepclk = cnt == 0;
 
 // counter for each step
 reg [6:0] stepcnt;
+wire [7:0] wavedat;
 always @(posedge stepclk) begin
 	if (stepcnt == 7'd127)
 		stepcnt = 0;
 	else
 		stepcnt = stepcnt + 1;
 end
-assign DAT = note_on ? sin(stepcnt) : 0;
+assign wavedat = sin(stepcnt);
+
+// wave data output
+wire [23:0] outvol = cur_vol * cur_velocity * 2 * wavedat;
+assign DAT = outvol[23:16];
 
 // sin table
 function [7:0] sin;
