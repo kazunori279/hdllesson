@@ -7,16 +7,15 @@
   */
   
 module alu (
-  input   [`W-1:0] data_0_in,
-  input   [`W-1:0] data_1_in,
-  output  [`W-1:0] data_out,
+  input   [3:0] data_0_in,
+  input   [3:0] data_1_in,
+  output  [3:0] data_out,
   output  carry_out
 );
 
-  wire [`W:0] result;
+  wire [4:0] result;
   assign result = data_0_in + data_1_in;
-  assign data_out = result[`W-1:0];
-  assign carry_out = result[`W];
+  assign data_out = result[3:0];
+  assign carry_out = result[4];
 
 endmodule
-  

@@ -6,25 +6,22 @@
   
  */
 
-// defines
-`define W 4               // address bit width
-`define DW 8              // data bit width
-
-`define SEL_A   2'b00     // data select register A
-`define SEL_B   2'b01     // data select register B
-`define SEL_IN  2'b10     // data select IN
+`include "defines.v"
 
 module FourBitCPU (
   input   clk,
   input   btn0_n,
   output  d_clk_cpu,
-  output  [`W-1:0] d_pc,
-  output  [`DW-1:0] d_inst,
-  output  [`W-1:0] d_reg_a_out,
-  output  [`W-1:0] d_reg_b_out,
-  output  [`W-1:0] d_alu_data_out,
+  output  [3:0] d_pc,
+  output  [7:0] d_inst,
+  output  [3:0] d_reg_a_out,
+  output  [3:0] d_reg_b_out,
+  output  [3:0] d_alu_data_out,
   output  d_alu_carry_out,
-  output  [1:0] d_alu_data_sel
+  output  [1:0] d_alu_data_sel,
+  output  d_reg_a_load,
+  output  d_reg_b_load,
+  output  d_decoded_out
 );
 
   // reset signal
@@ -44,7 +41,7 @@ module FourBitCPU (
   );
   
   // program counter
-  wire [`W-1:0] pc;
+  wire [3:0] pc;
   register_file register_file_pc(
     .clk_cpu(clk_cpu), 
     .reset(reset), 
@@ -52,13 +49,14 @@ module FourBitCPU (
     .dat_in(next_pc), 
     .dat_out(pc)
   );
-  reg [`W-1:0] next_pc;
+  reg [3:0] next_pc;
   always @(*) begin
-    next_pc <= pc + `W'd1;
+    next_pc <= pc + 4'd1;
   end
   
   // instruction rom
-  wire [`DW-1:0] inst;
+  
+  wire [7:0] inst;
   rom rom0(
     .clk_cpu(clk_cpu), 
     .reset(reset), 
@@ -68,7 +66,7 @@ module FourBitCPU (
   
   // register A
   wire reg_a_load;
-  wire [`W-1:0] reg_a_out;
+  wire [3:0] reg_a_out;
   register_file register_file_a(
     .clk_cpu(clk_cpu), 
     .reset(reset), 
@@ -79,7 +77,7 @@ module FourBitCPU (
   
   // register B
   wire reg_b_load;
-  wire [`W-1:0] reg_b_out;
+  wire [3:0] reg_b_out;
   register_file register_file_b(
     .clk_cpu(clk_cpu), 
     .reset(reset), 
@@ -93,13 +91,13 @@ module FourBitCPU (
   assign alu_data_0_in =
     alu_data_sel == `SEL_A ? reg_a_out :
     alu_data_sel == `SEL_B ? reg_b_out : 
-    `W-1'd0;
+    3'd0;
   assign alu_data_1_in = inst[3:0];
   
   // ALU
-  wire [`W-1:0] alu_data_0_in;
-  wire [`W-1:0] alu_data_1_in;
-  wire [`W-1:0] alu_data_out;
+  wire [3:0] alu_data_0_in;
+  wire [3:0] alu_data_1_in;
+  wire [3:0] alu_data_out;
   wire alu_carry_out;
   alu alu0(
     .data_0_in(alu_data_0_in),
@@ -110,10 +108,11 @@ module FourBitCPU (
   
   // decoder
   decoder decoder0(
-    .inst(inst),
+    .op_in(inst[7:4]),
     .alu_data_sel(alu_data_sel),
     .reg_a_load(reg_a_load),
-    .reg_b_load(reg_b_load)
+    .reg_b_load(reg_b_load),
+    .decoded_out(d_decoded_out)
   );
   
   // dummy output
@@ -125,5 +124,7 @@ module FourBitCPU (
   assign d_alu_data_out = alu_data_out;
   assign d_alu_carry_out = alu_carry_out;
   assign d_alu_data_sel = alu_data_sel;
+  assign d_reg_a_load = reg_a_load;
+  assign d_reg_b_load = reg_b_load;
   
 endmodule

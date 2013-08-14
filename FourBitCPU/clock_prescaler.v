@@ -2,8 +2,6 @@
  * clock_prescaler.v
  */
 
-//`define CPU_CLK_PRESCALE 32'd49999999
-`define CPU_CLK_PRESCALE 32'd1
 
 module clock_prescaler (
   input   clk,

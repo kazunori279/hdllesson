@@ -6,30 +6,28 @@
   
   */
 
-`define W 4               // address bit width
-`define DW 8              // data bit width
 
 module rom (
   input   clk_cpu,
   input   reset,
-  input   [`W-1:0] adrs,
-  output  [`DW-1:0] dat_out
+  input   [3:0] adrs,
+  output  [7:0] dat_out
 );
 
   // ROM instruction data
-  function [`DW-1:0] rom_data (
-    input   [`W-1:0] rom_adrs
+  function [7:0] rom_data (
+    input [3:0] rom_adrs
   );
     begin
       case (rom_adrs)
         4'h0: rom_data = 8'h0;
-        4'h1: rom_data = 8'h0;
+        4'h1: rom_data = {`OP_ADD_A_IM, 4'b1111};
         4'h2: rom_data = 8'h0;
-        4'h3: rom_data = 8'h0;
+        4'h3: rom_data = {`OP_ADD_A_IM, 4'b0000};
         4'h4: rom_data = 8'h0;
-        4'h5: rom_data = 8'h0;
+        4'h5: rom_data = {`OP_ADD_B_IM, 4'b1111};
         4'h6: rom_data = 8'h0;
-        4'h7: rom_data = 8'h0;
+        4'h7: rom_data = {`OP_ADD_B_IM, 4'b0000};
         4'h8: rom_data = 8'h0;
         4'h9: rom_data = 8'h0;
         4'ha: rom_data = 8'h0;
