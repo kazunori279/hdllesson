@@ -6,6 +6,7 @@
   
   */
 
+`include "defines.v"
 
 module rom (
   input   clk_cpu,

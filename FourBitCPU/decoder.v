@@ -6,6 +6,8 @@
   
   */
 
+`include "defines.v"
+
 module decoder (
   input   [3:0] op_in,
   output  [1:0] alu_data_sel,

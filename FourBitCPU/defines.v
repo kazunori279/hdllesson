@@ -6,6 +6,8 @@
   
   */
 
+`timescale 1ns/1ns
+
 //`define CPU_CLK_PRESCALE 32'd49999999
 `define CPU_CLK_PRESCALE 32'd1
 
@@ -21,3 +23,9 @@
 `define OP_MOV_A_B    4'h5
 `define OP_MOV_B_A    4'h6
   
+`define CYCLE 20
+`define HCYCL 10
+`define DELAY 2
+`define STROB 18
+`define HSTRB 8
+

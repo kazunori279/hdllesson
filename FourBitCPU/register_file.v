@@ -5,7 +5,9 @@
   Represents one register with specified bit width.
   
   */
-  
+
+`include "defines.v"
+
 module register_file (
   input   clk_cpu,
   input   reset,

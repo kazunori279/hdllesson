@@ -2,6 +2,7 @@
  * clock_prescaler.v
  */
 
+`include "defines.v"
 
 module clock_prescaler (
   input   clk,

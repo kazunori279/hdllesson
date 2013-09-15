@@ -10,18 +10,7 @@
 
 module FourBitCPU (
   input   clk,
-  input   btn0_n,
-  output  d_clk_cpu,
-  output  [3:0] d_pc,
-  output  [7:0] d_inst,
-  output  [3:0] d_reg_a_out,
-  output  [3:0] d_reg_b_out,
-  output  [3:0] d_alu_data_out,
-  output  d_alu_carry_out,
-  output  [1:0] d_alu_data_sel,
-  output  d_reg_a_load,
-  output  d_reg_b_load,
-  output  d_decoded_out
+  input   btn0_n
 );
 
   // reset signal
@@ -42,6 +31,7 @@ module FourBitCPU (
   
   // program counter
   wire [3:0] pc;
+  reg [3:0] next_pc;
   register_file register_file_pc(
     .clk_cpu(clk_cpu), 
     .reset(reset), 
@@ -49,7 +39,6 @@ module FourBitCPU (
     .dat_in(next_pc), 
     .dat_out(pc)
   );
-  reg [3:0] next_pc;
   always @(*) begin
     next_pc <= pc + 4'd1;
   end
@@ -62,6 +51,18 @@ module FourBitCPU (
     .reset(reset), 
     .adrs(pc), 
     .dat_out(inst)
+  );
+  
+  // ALU
+  wire [3:0] alu_data_0_in;
+  wire [3:0] alu_data_1_in;
+  wire [3:0] alu_data_out;
+  wire alu_carry_out;
+  alu alu0(
+    .data_0_in(alu_data_0_in),
+    .data_1_in(alu_data_1_in),
+    .data_out(alu_data_out),
+    .carry_out(alu_carry_out)
   );
   
   // register A
@@ -94,18 +95,6 @@ module FourBitCPU (
     3'd0;
   assign alu_data_1_in = inst[3:0];
   
-  // ALU
-  wire [3:0] alu_data_0_in;
-  wire [3:0] alu_data_1_in;
-  wire [3:0] alu_data_out;
-  wire alu_carry_out;
-  alu alu0(
-    .data_0_in(alu_data_0_in),
-    .data_1_in(alu_data_1_in),
-    .data_out(alu_data_out),
-    .carry_out(alu_carry_out)
-  );
-  
   // decoder
   decoder decoder0(
     .op_in(inst[7:4]),
@@ -114,17 +103,5 @@ module FourBitCPU (
     .reg_b_load(reg_b_load),
     .decoded_out(d_decoded_out)
   );
-  
-  // dummy output
-  assign d_clk_cpu = clk_cpu;
-  assign d_pc = pc;
-  assign d_inst = inst;
-  assign d_reg_a_out = reg_a_out;
-  assign d_reg_b_out = reg_b_out;
-  assign d_alu_data_out = alu_data_out;
-  assign d_alu_carry_out = alu_carry_out;
-  assign d_alu_data_sel = alu_data_sel;
-  assign d_reg_a_load = reg_a_load;
-  assign d_reg_b_load = reg_b_load;
   
 endmodule
