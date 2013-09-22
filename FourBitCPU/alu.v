@@ -5,7 +5,9 @@
   Represents ALU.
   
   */
-  
+
+`include "defines.v"
+
 module alu (
   input   [3:0] data_0_in,
   input   [3:0] data_1_in,

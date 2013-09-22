@@ -10,7 +10,9 @@
 
 module FourBitCPU (
   input   clk,
-  input   btn0_n
+  input   btn0_n,
+  input [3:0] io_in,
+  output [3:0] io_out
 );
 
   // reset signal
@@ -43,6 +45,9 @@ module FourBitCPU (
     .clk_cpu(clk_cpu),
     .reset(reset),
     .inst(inst),
-    .pc(pc)
+    .io_in(io_in),
+    .pc(pc),
+    .io_out(io_out)
   );
+  
 endmodule

@@ -23,6 +23,8 @@
 `define OP_MOV_B_IM   4'h4
 `define OP_MOV_A_B    4'h5
 `define OP_MOV_B_A    4'h6
+`define OP_IN_A       4'h7
+`define OP_IN_B       4'h8
   
 `define CYCLE 20
 `define HCYCL 10
