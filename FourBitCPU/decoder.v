@@ -20,7 +20,7 @@ module decoder (
   function [3:0] decode_op;
     input [3:0] op;
     case (op)
-      `OP_NOP:      decode_op = {`SEL_A, 1'b0, 1'b0};
+      `OP_NOP:      decode_op = {`SEL_Z, 1'b0, 1'b0};
       `OP_ADD_A_IM: decode_op = {`SEL_A, 1'b1, 1'b0};
       `OP_ADD_B_IM: decode_op = {`SEL_B, 1'b0, 1'b1};
       `OP_MOV_A_IM: decode_op = {`SEL_Z, 1'b1, 1'b0};
