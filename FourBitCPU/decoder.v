@@ -23,7 +23,9 @@ module decoder (
       `OP_NOP:      decode_op = {`SEL_A, 1'b0, 1'b0};
       `OP_ADD_A_IM: decode_op = {`SEL_A, 1'b1, 1'b0};
       `OP_ADD_B_IM: decode_op = {`SEL_B, 1'b0, 1'b1};
-      default:      decode_op = {`SEL_A, 1'b0, 1'b0};
+      `OP_MOV_A_IM: decode_op = {`SEL_Z, 1'b1, 1'b0};
+      `OP_MOV_B_IM: decode_op = {`SEL_Z, 1'b0, 1'b1};
+      default:      decode_op = {`SEL_Z, 1'b0, 1'b0};
     endcase
   endfunction
 

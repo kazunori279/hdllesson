@@ -13,7 +13,8 @@
 
 `define SEL_A   2'b00     // data select register A
 `define SEL_B   2'b01     // data select register B
-`define SEL_IN  2'b10     // data select IN
+`define SEL_I   2'b10     // data select IN
+`define SEL_Z   2'b11     // data select ZERO
 
 `define OP_NOP        4'h0
 `define OP_ADD_A_IM   4'h1
