@@ -57,7 +57,7 @@ end
 endtask
 
 // test instructions
-parameter LENGTH = 16;
+parameter LENGTH = 33;
 parameter LSB_EXP_IO_OUT = 0;
 parameter MSB_EXP_IO_OUT = LSB_EXP_IO_OUT + 3;
 parameter LSB_EXP_REG_B = MSB_EXP_IO_OUT + 1;
@@ -86,7 +86,7 @@ begin
     @(posedge clk_cpu) begin
       rom = test_rom[i];
       inst = rom[MSB_INST:LSB_INST];
-      io_in = rom[MSB_IO_IN:MSB_IO_IN];
+      io_in = rom[MSB_IO_IN:LSB_IO_IN];
       exp_pc = rom[MSB_EXP_PC:LSB_EXP_PC];
       exp_reg_a = rom[MSB_EXP_REG_A:LSB_EXP_REG_A];
       exp_reg_b = rom[MSB_EXP_REG_B:LSB_EXP_REG_B];

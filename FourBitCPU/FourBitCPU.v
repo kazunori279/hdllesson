@@ -33,6 +33,7 @@ module FourBitCPU (
   
   // instruction rom
   wire [7:0] inst;
+  wire [3:0] pc;
   rom rom0(
     .clk_cpu(clk_cpu), 
     .reset(reset), 

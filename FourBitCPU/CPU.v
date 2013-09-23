@@ -93,6 +93,7 @@ module CPU (
   // decoder
   decoder decoder0(
     .op_in(inst[7:4]),
+    .alu_carry(alu_carry_out),
     .alu_data_sel(alu_data_sel),
     .reg_a_load(reg_a_load),
     .reg_b_load(reg_b_load),
