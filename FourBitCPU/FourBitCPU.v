@@ -11,8 +11,12 @@
 module FourBitCPU (
   input   clk,
   input   btn0_n,
-  input [3:0] io_in,
-  output [3:0] io_out
+  input   [3:0] io_in,
+  output  [3:0] io_out,
+  output  [7:0] led0_n,
+  output  [7:0] led1_n,
+  output  [7:0] led2_n,
+  output  [7:0] led3_n
 );
 
   // reset signal
@@ -50,5 +54,11 @@ module FourBitCPU (
     .pc(pc),
     .io_out(io_out)
   );
+  
+  // LED display (pc and inst)
+  led_decoder led_decoder0(pc, 1'b1, 1'b1, led0_n);
+  led_decoder led_decoder1(4'b0000, 1'b0, 1'b0, led1_n);
+  led_decoder led_decoder2(inst[7:4], 1'b0, 1'b1, led2_n);
+  led_decoder led_decoder3(inst[3:0], 1'b0, 1'b1, led3_n);
   
 endmodule
