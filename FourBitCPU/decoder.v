@@ -22,6 +22,7 @@ module decoder (
   // format = {data selector for ALU, a_load, b_load, pc_load, io_load}
   function [5:0] decode_op;
     input [3:0] op;
+    input alu_carry_in;
     case (op)
       `OP_NOP:      decode_op = {`SEL_Z, 1'b0, 1'b0, 1'b0, 1'b0};
       `OP_ADD_A_IM: decode_op = {`SEL_A, 1'b1, 1'b0, 1'b0, 1'b0};
@@ -36,7 +37,7 @@ module decoder (
       `OP_OUT_B:    decode_op = {`SEL_B, 1'b0, 1'b0, 1'b0, 1'b1};
       `OP_JMP_IM:   decode_op = {`SEL_Z, 1'b0, 1'b0, 1'b1, 1'b0};
       `OP_JNC_IM:   
-        if (~alu_carry)
+        if (~alu_carry_in)
                     decode_op = {`SEL_Z, 1'b0, 1'b0, 1'b1, 1'b0};
         else
                     decode_op = {`SEL_Z, 1'b0, 1'b0, 1'b0, 1'b0};
@@ -45,7 +46,10 @@ module decoder (
   endfunction
 
   // decompose decoded bits into control paths
-  wire [5:0] decoded = decode_op(op_in);
+  reg [5:0] decoded;
+  always @ (op_in or alu_carry) begin
+    decoded = decode_op(op_in, alu_carry);
+  end
   assign alu_data_sel = decoded[5:4];
   assign reg_a_load = decoded[3];
   assign reg_b_load = decoded[2];

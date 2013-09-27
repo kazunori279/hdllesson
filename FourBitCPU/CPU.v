@@ -40,6 +40,8 @@ module CPU (
   wire [3:0] alu_data_1_in;
   wire alu_carry_out;
   alu alu0(
+    .clk(clk_cpu),
+    .reset(reset),
     .data_0_in(alu_data_0_in),
     .data_1_in(alu_data_1_in),
     .data_out(alu_data_out),

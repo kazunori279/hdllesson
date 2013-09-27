@@ -7,7 +7,8 @@
 module clock_prescaler (
   input   clk,
   input   reset,
-  output  clk_cpu
+  output  reg clk_cpu,
+  output  reg clk_stp
 );
 
   reg [31:0] cnt = 32'd0;
@@ -21,7 +22,22 @@ module clock_prescaler (
       cnt <= cnt + 32'd1;
     end
   end
+
+  // clk_cpu register (clock for cpu)
+  always @(posedge clk or posedge reset) begin
+    if (reset)
+      clk_cpu <= 0;
+    else
+      clk_cpu <= cnt < (`CPU_CLK_PRESCALE / 2);
+  end
   
-  assign clk_cpu = (cnt == 32'd0);
+  // clk_stp register (clock for SignalTap)
+  always @(posedge clk or posedge reset) begin
+    if (reset)
+      clk_stp <= 0;
+    else
+      clk_stp <= cnt[21:21];
+  end
+  
 
 endmodule

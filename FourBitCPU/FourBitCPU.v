@@ -28,11 +28,12 @@ module FourBitCPU (
   );
 
   // cpu clock prescaling
-  wire clk_cpu;
+  wire clk_cpu, clk_stp;
   clock_prescaler clock_prescaler0(
     .clk(clk), 
     .reset(reset), 
-    .clk_cpu(clk_cpu)
+    .clk_cpu(clk_cpu),
+    .clk_stp(clk_stp)
   );
   
   // instruction rom
@@ -56,9 +57,9 @@ module FourBitCPU (
   );
   
   // LED display (pc and inst)
-  led_decoder led_decoder0(pc, 1'b1, 1'b1, led0_n);
-  led_decoder led_decoder1(4'b0000, 1'b0, 1'b0, led1_n);
-  led_decoder led_decoder2(inst[7:4], 1'b0, 1'b1, led2_n);
-  led_decoder led_decoder3(inst[3:0], 1'b0, 1'b1, led3_n);
+  led_decoder led_decoder3(pc, clk_cpu, 1'b1, led3_n);
+  led_decoder led_decoder2(4'b0000, 1'b0, 1'b0, led2_n);
+  led_decoder led_decoder1(inst[7:4], 1'b0, 1'b1, led1_n);
+  led_decoder led_decoder0(inst[3:0], 1'b0, 1'b1, led0_n);
   
 endmodule

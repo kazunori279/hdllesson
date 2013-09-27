@@ -7,8 +7,8 @@
  */
 
 // CPU prescaling (1 cycle per sec)
-//`define CPU_CLK_PRESCALE 32'd49999999
-`define CPU_CLK_PRESCALE 32'd1
+`define CPU_CLK_PRESCALE 32'd49999999
+//`define CPU_CLK_PRESCALE 32'd1
 
 // data select for ALU
 `define SEL_A   2'b00     // data select register A
