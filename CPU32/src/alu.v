@@ -24,7 +24,7 @@ module alu (
   always_comb begin
     case (alu_src)
       `ALU_SRC_IMM:   alu_result = src_a + inst[`I_IMM];
-      `ALU_SRC_RD_B:  alu_result = src_a + src_b;
+      `ALU_SRC_REG:   alu_result = src_a + src_b;
       default:        alu_result = 32'd0;
     endcase
   end

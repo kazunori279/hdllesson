@@ -7,7 +7,7 @@
  */
 
 `include "src/defines.v"
-`define TEST_LENGTH 4
+`define TEST_LENGTH 6
 
 module CPU_tb;
 
@@ -20,7 +20,7 @@ wire [`WORD] pc;
 CPU CPU0(
   .clk_cpu(clk_cpu),
   .reset(reset),
-  .inst(test_rom[(pc - 32'h00400000) / 4]),
+  .inst(test_rom[(pc - `START_ADRS) / 4]),
   .pc(pc)
 );
 

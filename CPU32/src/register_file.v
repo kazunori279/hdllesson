@@ -21,7 +21,7 @@ module register_file (
 );
 
   // registers
-  reg [`WORD] regs[0:31];
+  reg [`WORD] regs[0:`N_REGS - 1];
 
   // reset and write data
   integer i;  
