@@ -50,8 +50,8 @@
 
 // R-type encodings
 `define I_RD    15:11
-`define I_SHAMT 10:6
-`define I_FUNCT 5:0
+`define I_SHFT  10:6
+`define I_FUNC  5:0
 
 // I-type encodings
 `define I_IMM   15:0
@@ -90,6 +90,7 @@
 `define OP_swcl   6'b111001
 
 // R-type instructions
+`define R_x       6'bxxxxxx
 `define R_sll     6'b000000
 `define R_srl     6'b000010
 `define R_sra     6'b000011
@@ -133,9 +134,12 @@
 `define CP_RAM_WR       `CP_RAM_WR_LSB:`CP_RAM_WR_LSB
 `define CP_ALU_SRC_LSB  `CP_RAM_WR_LSB + 1
 `define CP_ALU_SRC      `CP_ALU_SRC_LSB:`CP_ALU_SRC_LSB
+//`define CP_ALU_CTRL_LSB `CP_ALU_SRC_LSB + 1
+//`define CP_ALU_CTRL     `CP_ALU_CTRL_LSB + 2:`CP_ALU_CTRL_LSB
+//`define CP_REG_WR_LSB   `CP_ALU_CTRL_LSB + 3
 `define CP_ALU_CTRL_LSB `CP_ALU_SRC_LSB + 1
-`define CP_ALU_CTRL     `CP_ALU_CTRL_LSB + 2:`CP_ALU_CTRL_LSB
-`define CP_REG_WR_LSB   `CP_ALU_CTRL_LSB + 3
+`define CP_ALU_CTRL     `CP_ALU_CTRL_LSB + 5:`CP_ALU_CTRL_LSB
+`define CP_REG_WR_LSB   `CP_ALU_CTRL_LSB + 6
 `define CP_REG_WR       `CP_REG_WR_LSB:`CP_REG_WR_LSB
 `define CP_REG_DST_LSB  `CP_REG_WR_LSB + 1
 `define CP_REG_DST      `CP_REG_DST_LSB:`CP_REG_DST_LSB
@@ -161,8 +165,17 @@
 `define ALU_SRC_REG   1'b0
 `define ALU_SRC_IMM   1'b1
 
+/*
 `define ALU_CTRL_X    3'bxxx
 `define ALU_CTRL_ADD  3'b000
+`define ALU_CTRL_ADDU 3'b001
+`define ALU_CTRL_SUB  3'b010
+`define ALU_CTRL_SUBU 3'b011
+`define ALU_CTRL_AND  3'b100
+`define ALU_CTRL_OR   3'b101
+`define ALU_CTRL_XOR  3'b110
+`define ALU_CTRL_NOR  3'b111
+*/
 
 `define RAM_WR_X      1'bx
 `define RAM_WR_F      1'b0
@@ -171,3 +184,4 @@
 `define JMP_X         1'bx
 `define JMP_F         1'b0
 `define JMP_T         1'b1
+

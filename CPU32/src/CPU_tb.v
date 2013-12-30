@@ -7,13 +7,12 @@
  */
 
 `include "src/defines.v"
-`define TEST_LENGTH 6
 
 module CPU_tb;
 
 reg clk_cpu;
 reg reset;
-reg [`WORD] test_rom[0:`TEST_LENGTH - 1];
+reg [`WORD] test_rom[0:1023];
 wire [`WORD] pc;
 
 // CPU
