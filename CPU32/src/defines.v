@@ -36,8 +36,9 @@
 // RAM size
 `define N_RAM 32
 
-// starting address
-`define START_ADRS 32'h00000000
+// special addresses
+`define START_ADRS	32'h00000000
+`define EXCP_ADRS 	32'h80000180
 
 //
 // Instruction Encodings
@@ -128,15 +129,12 @@
 //
 
 `define CP_START        0
-`define CP_JMP_LSB      `CP_START
-`define CP_JMP          `CP_JMP_LSB:`CP_JMP_LSB
-`define CP_RAM_WR_LSB   `CP_JMP_LSB + 1
+`define CP_EXCP_LSB     `CP_START
+`define CP_EXCP         `CP_EXCP_LSB:`CP_EXCP_LSB
+`define CP_RAM_WR_LSB   `CP_EXCP_LSB + 1
 `define CP_RAM_WR       `CP_RAM_WR_LSB:`CP_RAM_WR_LSB
 `define CP_ALU_SRC_LSB  `CP_RAM_WR_LSB + 1
 `define CP_ALU_SRC      `CP_ALU_SRC_LSB:`CP_ALU_SRC_LSB
-//`define CP_ALU_CTRL_LSB `CP_ALU_SRC_LSB + 1
-//`define CP_ALU_CTRL     `CP_ALU_CTRL_LSB + 2:`CP_ALU_CTRL_LSB
-//`define CP_REG_WR_LSB   `CP_ALU_CTRL_LSB + 3
 `define CP_ALU_CTRL_LSB `CP_ALU_SRC_LSB + 1
 `define CP_ALU_CTRL     `CP_ALU_CTRL_LSB + 5:`CP_ALU_CTRL_LSB
 `define CP_REG_WR_LSB   `CP_ALU_CTRL_LSB + 6
@@ -181,7 +179,7 @@
 `define RAM_WR_F      1'b0
 `define RAM_WR_T      1'b1
 
-`define JMP_X         1'bx
-`define JMP_F         1'b0
-`define JMP_T         1'b1
+`define EXCP_X         1'bx
+`define EXCP_F         1'b0
+`define EXCP_T         1'b1
 

@@ -24,7 +24,7 @@ module alu (
   wire [`WORD] alu_src;
   assign alu_src = cpath[`CP_ALU_SRC] === `ALU_SRC_IMM ? {{16{inst[15]}}, inst[`I_IMM]} : src_rt;
 
-  always_ff @(*) begin
+  always_comb begin
     case (cpath[`CP_ALU_CTRL])
       `R_sll:     result = src_rt << inst[`I_SHFT];
       `R_srl:     result = src_rt >> inst[`I_SHFT];
@@ -38,25 +38,24 @@ module alu (
       `R_mtlo:    result = {hilo_q[63:32], src_rs};
       `R_mult:    result = $signed(src_rs) * $signed(src_rt);
       `R_multu:   result = $unsigned(src_rs) * $unsigned(src_rt);
-      `R_div:     result = {src_rs % src_rt, src_rs / src_rt};
+      `R_div:     result = {$signed(src_rs) % $signed(src_rt), $signed(src_rs) / $signed(src_rt)};
       `R_divu:    result = {$unsigned(src_rs) % $unsigned(src_rt), $unsigned(src_rs) / $unsigned(src_rt)};
-      `R_multu:   result = $unsigned(src_rs) * $unsigned(src_rt);
-      `R_add:     result = src_rs + alu_src;
+      `R_add:     result = $signed(src_rs) + $signed(alu_src);
       `R_addu:    result = $unsigned(src_rs) + $unsigned(alu_src);
-      `R_sub:     result = src_rs - alu_src;
+      `R_sub:     result = $signed(src_rs) - $signed(alu_src);
       `R_subu:    result = $unsigned(src_rs) - $unsigned(alu_src);
       `R_and:     result = src_rs & src_rt;
       `R_or:      result = src_rs | src_rt;
       `R_xor:     result = src_rs ^ src_rt;
       `R_nor:     result = ~(src_rs | src_rt);
-      `R_slt:     result = src_rs < src_rt ? 32'b1 : 32'b0;
+      `R_slt:     result = $signed(src_rs) < $signed(src_rt) ? 32'b1 : 32'b0;
       `R_sltu:    result = $unsigned(src_rs) < $unsigned(src_rt) ? 32'b1 : 32'b0;
-      default:    result = 32'd0;
+      default:    result = `B_DWORD'bx; // unsupported operation
     endcase
   end
   
   // operations to write hilo reg
-  always_ff @(*) begin
+  always_comb begin
     case (cpath[`CP_ALU_CTRL])
       `R_mthi:  hilo_wr_en = 1'b1;
       `R_mtlo:  hilo_wr_en = 1'b1;

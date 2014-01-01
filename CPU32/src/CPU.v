@@ -33,14 +33,16 @@ module CPU (
     if (reset) begin
       pc <= `START_ADRS;
     end else begin
-      if (cpath[`CP_JMP])
+      if (cpath[`CP_EXCP] || alu_result === `B_DWORD'bx) // exception
+        pc <= `EXCP_ADRS;
+      else begin
         case (inst[`I_OP])
           `OP_beq:  pc <= alu_result === 64'd0 ? next_pc + brnc_addr : next_pc;
           `OP_bne:  pc <= alu_result !== 64'd0 ? next_pc + brnc_addr : next_pc;
           `OP_j:    pc <= {pc[31:28], jmp_addr[27:0]};
+          default:  pc <= next_pc;
         endcase
-      else
-        pc <= next_pc;
+      end
     end
   end
 
