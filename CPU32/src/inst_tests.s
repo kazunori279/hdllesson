@@ -3,23 +3,72 @@
 # (each assertion will make an infinite loop if fails)
 #
 
-	# add
+	# jr
+	nop
+	addi	$t0,$0,assert_jr_next
+	jr		$t0
+assert_jr:
+	j		assert_jr
+assert_jr_next:
+
+	# jalr
+	nop
+	addi	$t0,$0,assert_jalr_next
+	jalr	$t0
+assert_jalr:
+	j		assert_jalr
+assert_jalr_next:
+	addi	$t7,$0,assert_jalr
+	bne		$31,$t7,assert_jalr_next
+
+	# slt, sltu
+	nop
+	addi	$t0,$0,0
+	addi	$t1,$0,-1
+	slt		$t2,$t0,$t1
+	sltu	$t3,$t1,$t0
+assert_slt:
+	bne		$t2,$0,assert_slt
+	bne		$t3,$0,assert_slt
+
+	# and, or, xor, nor
+	nop
+	addi	$t0,$0,1
+	addi	$t1,$0,-1
+	and		$t2,$t0,$t1
+	or		$t3,$t0,$t1
+	xor		$t4,$t0,$t1
+	nor		$t5,$t0,$t1
+assert_and:
+	addi	$t7,$0,1
+	bne		$t2,$t7,assert_and
+	addi	$t7,$0,-1
+	bne		$t3,$t7,assert_and
+	addi	$t7,$0,0xfffe
+	bne		$t4,$t7,assert_and
+	addi	$t7,$0,0
+	bne		$t5,$t7,assert_and
+
+	# sub, subu
+	nop
+	addi	$t0,$0,1
+	addi	$t1,$0,-1
+	sub		$t2,$t0,$t1
+	subu	$t3,$t0,$t1
+assert_sub:
+	addi	$t7,$0,2
+	bne		$t2,$t7,assert_sub
+	bne		$t3,$t7,assert_sub
+
+	# add, addu
 	nop
 	addi	$t0,$0,1
 	addi	$t1,$0,-1
 	add		$t2,$t0,$t1
+	addu	$t3,$t0,$t1
 assert_add:
-	nop
 	bne		$t2,$0,assert_add
-
-	# addu
-	nop
-	addi	$t0,$0,1
-	addi	$t1,$0,-1
-	addu	$t2,$t0,$t1
-assert_addu:
-	nop
-	bne		$t2,$0,assert_addu
+	bne		$t3,$0,assert_add
 
 	# divu
 	nop

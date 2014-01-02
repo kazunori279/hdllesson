@@ -11,6 +11,7 @@
 module alu (
   input   clk_cpu,
   input   reset,
+  input   [`WORD] pc,
   input   [`WORD] inst,
   input   [`CPATH] cpath,
   input   [`WORD] src_rs,
@@ -32,6 +33,8 @@ module alu (
       `R_sllv:    result = src_rt << src_rs[4:0];
       `R_srlv:    result = src_rt >> src_rs[4:0];
       `R_srav:    result = $signed(src_rt) >>> src_rs[4:0];
+      `R_jr:      result = { src_rs, `B_WORD'b0 };        // jump to [rs]
+      `R_jalr:    result = { src_rs, (pc + `B_WORD'd8) }; // jump to [rs], $ra = PC + 8 (incl. delay slot)
       `R_mfhi:    result = hilo_q[63:32];
       `R_mthi:    result = {src_rs, hilo_q[31:0]};
       `R_mflo:    result = hilo_q[31:0];

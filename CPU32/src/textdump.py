@@ -4,6 +4,7 @@
 #
 # Usage: readelf -x .text a.out | python textdump.py 
 #
+# Dis-assemble: mips-gcc/bin/mips-objdump -d a.out
 
 import sys
 import re
