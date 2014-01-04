@@ -3,6 +3,91 @@
 # (each assertion will make an infinite loop if fails)
 #
 
+	# andi, ori, xori
+	nop
+	addi	$t0,$0,1
+	andi	$t1,$t0,0xffff
+	ori		$t2,$t0,0xffff
+	xori	$t3,$t0,0xffff
+assert_andi:
+	addi	$t7,$0,1
+	bne		$t1,$t7,assert_andi
+	addi	$t7,$0,-1
+	bne		$t2,$t7,assert_andi
+	addi	$t7,$0,0xfffe
+	bne		$t3,$t7,assert_andi
+
+	# slti, sltiu
+	nop
+	addi	$t0,$0,1
+	slti	$t1,$t0,-1
+	sltiu	$t2,$t0,0
+assert_slti:
+	bne		$t1,$0,assert_slti
+	bne		$t2,$0,assert_slti
+
+	# addi
+	nop
+	addi	$t0,$0,1
+	addi	$t1,$t0,1
+assert_addi:
+	addi	$t7,$0,2
+	bne		$t1,$t7,assert_addi
+
+	# addiu
+	nop
+	addiu	$t0,$0,1
+	addiu	$t1,$t0,1
+assert_addiu:
+	addi	$t7,$0,2
+	bne		$t1,$t7,assert_addiu
+
+	# blez
+	nop
+	addi	$t0,$0,-1
+assert_blez:
+	blez	$t0,assert_blez_next
+	j		assert_blez
+assert_blez_next:
+
+	# bgtz
+	nop
+	addi	$t0,$0,1
+assert_bgtz:
+	bgtz	$t0,assert_bgtz_next
+	j		assert_bgtz
+assert_bgtz_next:
+
+	# bltz
+	nop
+	addi	$t0,$0,-1
+assert_bltz:
+	bltz	$t0,assert_bltz_next
+	j		assert_bltz
+assert_bltz_next:
+
+	# bgez
+	nop
+	addi	$t0,$0,0
+assert_bgez:
+	bgez	$t0,assert_bgez_next
+	j		assert_bgez
+assert_bgez_next:
+
+	# bgez (optimized to b)
+	nop
+assert_bgez2:
+	bgez	$0,assert_bgez2_next
+	j		assert_bgez2
+assert_bgez2_next:
+
+	# b
+	nop
+assert_b:
+	b		assert_b_next
+	j		assert_b
+assert_b_next:
+
 	# jr
 	nop
 	addi	$t0,$0,assert_jr_next
@@ -191,9 +276,4 @@ assert_sllv:
 	srav	$t2,$t0,$t2
 assert_srav:
 	bne		$t2,$t0,assert_srav
-
-	# jr
-	# jalr
-	# syscall
-	# break
 

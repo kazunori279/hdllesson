@@ -125,7 +125,7 @@
 // TODO
 
 //
-// Control Paths
+// Control Path encodings
 //
 
 `define CP_START        0
@@ -146,39 +146,32 @@
 `define CP_END          `CP_REG_SRC_LSB
 `define CPATH           `CP_END:`CP_START
 
-// control path encodings
+// REG_WR: write to the destination register if true
 `define REG_WR_X      1'bx
 `define REG_WR_F      1'b0
 `define REG_WR_T      1'b1
 
+// REG_DST: the destination register (rt or rd)
 `define REG_DST_X     1'bx
 `define REG_DST_RT    1'b0
 `define REG_DST_RD    1'b1
 
+// REG_SRC: the source (alu or ram) to write to the destination register
 `define REG_SRC_X     1'bx
 `define REG_SRC_ALU   1'b0
 `define REG_SRC_RAM   1'b1
 
+// ALU_SRC: the source (a register or immediate) to pass to ALU
 `define ALU_SRC_X     1'bx
 `define ALU_SRC_REG   1'b0
 `define ALU_SRC_IMM   1'b1
 
-/*
-`define ALU_CTRL_X    3'bxxx
-`define ALU_CTRL_ADD  3'b000
-`define ALU_CTRL_ADDU 3'b001
-`define ALU_CTRL_SUB  3'b010
-`define ALU_CTRL_SUBU 3'b011
-`define ALU_CTRL_AND  3'b100
-`define ALU_CTRL_OR   3'b101
-`define ALU_CTRL_XOR  3'b110
-`define ALU_CTRL_NOR  3'b111
-*/
-
+// RAM_WR: write to RAM if true
 `define RAM_WR_X      1'bx
 `define RAM_WR_F      1'b0
 `define RAM_WR_T      1'b1
 
+// EXCP: stop the CPU if true
 `define EXCP_X         1'bx
 `define EXCP_F         1'b0
 `define EXCP_T         1'b1

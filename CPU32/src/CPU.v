@@ -18,7 +18,7 @@ module CPU (
   // wires and regs
   wire [`DWORD] alu_result;
   wire [`CPATH] cpath;
-  wire [`WORD] reg_rd_data_rs, reg_rd_data_rt, reg_wr_data;
+  wire [`WORD] reg_rd_data_rs, reg_rd_data_rt;
   wire [`WORD] ram_rd_data;
   wire [`DWORD] reg_rd_data_hilo;
   
@@ -32,10 +32,19 @@ module CPU (
     .pc(pc)
   );
   
-  // mux for register write
-  wire [4:0] reg_dst;
-  assign reg_dst = cpath[`CP_REG_DST] == `REG_DST_RT ? inst[`I_RT] : inst[`I_RD];
-  assign reg_wr_data = cpath[`CP_REG_SRC] == `REG_SRC_ALU ? alu_result[`WORD] : ram_rd_data;
+  // mux for register write destination
+  wire [4:0] reg_wr_adrs;
+  assign reg_wr_adrs = 
+    cpath[`CP_REG_DST] === `REG_DST_RT ? inst[`I_RT] :
+    cpath[`CP_REG_DST] === `REG_DST_RD ? inst[`I_RD] :
+    5'bx;
+
+  // mux for register write source
+  wire [`WORD] reg_wr_data;
+  assign reg_wr_data = 
+    cpath[`CP_REG_SRC] === `REG_SRC_ALU ? alu_result[`WORD] : 
+    cpath[`CP_REG_SRC] === `REG_SRC_RAM ? ram_rd_data :
+    `B_WORD'bx;
   
   // register file
   register_file register_file0(
@@ -43,7 +52,7 @@ module CPU (
     .reset(reset),
     .rd_adrs_a(inst[`I_RS]),
     .rd_adrs_b(inst[`I_RT]),
-    .wr_adrs(reg_dst),
+    .wr_adrs(reg_wr_adrs),
     .wr_data(reg_wr_data),
     .wr_en(cpath[`CP_REG_WR]),
     .q_a(reg_rd_data_rs),
@@ -64,11 +73,11 @@ module CPU (
   alu alu0(
     .clk_cpu(clk_cpu),
     .reset(reset),
-    .pc(pc),
+    .pc(pc),
     .inst(inst),
     .cpath(cpath),
-    .src_rs(reg_rd_data_rs),
-    .src_rt(reg_rd_data_rt),
+    .rs(reg_rd_data_rs),
+    .rt(reg_rd_data_rt),
     .hilo_q(reg_rd_data_hilo),
     .result(alu_result),
     .hilo_wr_en(reg_hilo_wr_en)
