@@ -89,15 +89,15 @@ module CPU (
     .cpath(cpath)
   );
   
-  // RAM
-  ram ram0(
+  // memory controller
+  memory_controller memory_controller0(
     .clk_cpu(clk_cpu),
     .reset(reset),
-    .rd_adrs(alu_result),
-    .wr_adrs(alu_result),
-    .wr_data(reg_rd_data_b),
-    .wr_en(cpath[`CP_RAM_WR]),
+    .pc(pc),
+    .adrs(alu_result[`WORD]),
+    .data(reg_rd_data_rt),
+    .inst(inst),
     .q(ram_rd_data)
   );
-    
+  
 endmodule

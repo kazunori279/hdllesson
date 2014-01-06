@@ -3,6 +3,23 @@
 # (each assertion will make an infinite loop if fails)
 #
 
+	# sw, sl
+	nop
+	addi	$t0,1
+	sw		$t0,0x500
+	lw		$t1,0x500
+assert_sw:
+	addi	$t7,1
+	bne		$t1,$t7,assert_sw
+
+	# lui
+	nop
+	lui		$t0,1
+assert_lui:
+	addi	$t7,$0,1
+	sll		$t7,$t7,16
+	bne		$t0,$t7,assert_lui
+
 	# andi, ori, xori
 	nop
 	addi	$t0,$0,1

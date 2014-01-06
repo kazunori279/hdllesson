@@ -33,8 +33,8 @@
 // number of registers
 `define N_REGS 32
 
-// RAM size
-`define N_RAM 32
+// RAM size (in number of words)
+`define N_RAM 1024
 
 // special addresses
 `define START_ADRS	32'h00000000
@@ -121,6 +121,9 @@
 `define R_slt     6'b101010
 `define R_sltu    6'b101011
 
+// R-type internal insts
+`define R_lui     6'b111001
+
 // F-type instructions
 // TODO
 
@@ -131,9 +134,7 @@
 `define CP_START        0
 `define CP_EXCP_LSB     `CP_START
 `define CP_EXCP         `CP_EXCP_LSB:`CP_EXCP_LSB
-`define CP_RAM_WR_LSB   `CP_EXCP_LSB + 1
-`define CP_RAM_WR       `CP_RAM_WR_LSB:`CP_RAM_WR_LSB
-`define CP_ALU_SRC_LSB  `CP_RAM_WR_LSB + 1
+`define CP_ALU_SRC_LSB  `CP_EXCP_LSB + 1
 `define CP_ALU_SRC      `CP_ALU_SRC_LSB:`CP_ALU_SRC_LSB
 `define CP_ALU_CTRL_LSB `CP_ALU_SRC_LSB + 1
 `define CP_ALU_CTRL     `CP_ALU_CTRL_LSB + 5:`CP_ALU_CTRL_LSB
@@ -166,10 +167,21 @@
 `define ALU_SRC_REG   1'b0
 `define ALU_SRC_IMM   1'b1
 
-// RAM_WR: write to RAM if true
-`define RAM_WR_X      1'bx
-`define RAM_WR_F      1'b0
-`define RAM_WR_T      1'b1
+/*
+// RAM_RD: read from RAM
+`define RAM_RD_X      2'bxx
+`define RAM_RD_F      2'b00
+`define RAM_RD_BYTE   2'b01 // read a LSB byte
+`define RAM_RD_HALF   2'b10 // read a LSB half word
+`define RAM_RD_WORD   2'b11 // read a full word
+
+// RAM_WR: write to RAM
+`define RAM_WR_X      2'bxx
+`define RAM_WR_F      2'b00
+`define RAM_WR_BYTE   2'b01 // write a LSB byte
+`define RAM_WR_HALF   2'b10 // write a LSB half word
+`define RAM_WR_WORD   2'b11 // write a full word
+*/
 
 // EXCP: stop the CPU if true
 `define EXCP_X         1'bx

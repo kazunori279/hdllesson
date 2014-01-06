@@ -17,11 +17,11 @@ module program_counter (
   output reg [`WORD] pc
 );
 
-  // calculate branch addresses
-  wire [`WORD] jmp_addr, brnc_addr, next_pc;
+  // calculate addresses
+  wire [`WORD] jmp_addr, brnc_addr, next_addr;
+  assign next_addr = pc + 32'd4;
   assign jmp_addr = inst[`I_ADDR] << 2;
-  assign brnc_addr = {{14{inst[15]}}, inst[`I_IMM], 2'b00} + next_pc; // sign extended + 2 bit shift
-  assign next_pc = pc + 32'd4;
+  assign brnc_addr = {{14{inst[15]}}, inst[`I_IMM], 2'b00} + next_addr; // sign extended imm + 2 bit shift
   
   // check if alu had unsupported operation
   wire alu_unsupported_op = inst[`I_OP] == `OP_R && alu_result === `B_DWORD'bx;
@@ -39,19 +39,19 @@ module program_counter (
             case (cpath[`CP_ALU_CTRL])
               `R_jr:    pc <= alu_result[63:32];
               `R_jalr:  pc <= alu_result[63:32];
-              default:  pc <= next_pc;
+              default:  pc <= next_addr;
             endcase
           `OP_bltz: 
             case (inst[`I_RT])
-              0:  pc <= $signed(alu_result) < 0 ? brnc_addr : next_pc;
-              1:  pc <= $signed(alu_result) >= 0 ? brnc_addr : next_pc;
+              0:  pc <= $signed(alu_result) < 0 ? brnc_addr : next_addr;
+              1:  pc <= $signed(alu_result) >= 0 ? brnc_addr : next_addr;
             endcase
-          `OP_beq:  pc <= alu_result === 64'd0 ? brnc_addr : next_pc;
-          `OP_bne:  pc <= alu_result !== 64'd0 ? brnc_addr : next_pc;
-          `OP_blez: pc <= $signed(alu_result) <= 0 ? brnc_addr : next_pc;
-          `OP_bgtz: pc <= $signed(alu_result) > 0 ? brnc_addr : next_pc;
+          `OP_beq:  pc <= alu_result === 64'd0 ? brnc_addr : next_addr;
+          `OP_bne:  pc <= alu_result !== 64'd0 ? brnc_addr : next_addr;
+          `OP_blez: pc <= $signed(alu_result) <= 0 ? brnc_addr : next_addr;
+          `OP_bgtz: pc <= $signed(alu_result) > 0 ? brnc_addr : next_addr;
           `OP_j:    pc <= {pc[31:28], jmp_addr[27:0]};
-          default:  pc <= next_pc;
+          default:  pc <= next_addr;
         endcase
       end
     end
