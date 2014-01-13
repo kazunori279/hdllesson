@@ -135,8 +135,8 @@
 `define CP_EXCP_LSB     `CP_START
 `define CP_EXCP         `CP_EXCP_LSB:`CP_EXCP_LSB
 `define CP_ALU_SRC_LSB  `CP_EXCP_LSB + 1
-`define CP_ALU_SRC      `CP_ALU_SRC_LSB:`CP_ALU_SRC_LSB
-`define CP_ALU_CTRL_LSB `CP_ALU_SRC_LSB + 1
+`define CP_ALU_SRC      `CP_ALU_SRC_LSB + 1:`CP_ALU_SRC_LSB
+`define CP_ALU_CTRL_LSB `CP_ALU_SRC_LSB + 2
 `define CP_ALU_CTRL     `CP_ALU_CTRL_LSB + 5:`CP_ALU_CTRL_LSB
 `define CP_REG_WR_LSB   `CP_ALU_CTRL_LSB + 6
 `define CP_REG_WR       `CP_REG_WR_LSB:`CP_REG_WR_LSB
@@ -162,10 +162,11 @@
 `define REG_SRC_ALU   1'b0
 `define REG_SRC_RAM   1'b1
 
-// ALU_SRC: the source (a register or immediate) to pass to ALU
-`define ALU_SRC_X     1'bx
-`define ALU_SRC_REG   1'b0
-`define ALU_SRC_IMM   1'b1
+// ALU_SRC: the source (a register, immediate signed or immediate unsigned) to pass to ALU
+`define ALU_SRC_X     2'bxx
+`define ALU_SRC_REG   2'b00
+`define ALU_SRC_IMM   2'b01
+`define ALU_SRC_IMU   2'b10
 
 /*
 // RAM_RD: read from RAM

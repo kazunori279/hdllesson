@@ -3,9 +3,31 @@
 # (each assertion will make an infinite loop if fails)
 #
 
-	# sw, sl
+	# lb
 	nop
-	addi	$t0,1
+	lui		$t0,0xf102
+	ori		$t0,$t0,0xf304
+	sw		$t0,0x40
+	lb		$t0,0x40
+	lb		$t1,0x41
+	lb		$t2,0x42
+	lb		$t3,0x43
+assert_lb0:
+	addi	$t7,$0,0x04
+	bne		$t0,$t7,assert_lb0
+assert_lb1:
+	addi	$t7,$0,0xfff3
+	bne		$t1,$t7,assert_lb1
+assert_lb2:
+	addi	$t7,$0,0x02
+	bne		$t2,$t7,assert_lb2
+assert_lb3:
+	addi	$t7,$0,0xfff1
+	bne		$t3,$t7,assert_lb3
+
+	# sw, lw
+	nop
+	addi	$t0,$0,1
 	sw		$t0,0x500
 	lw		$t1,0x500
 assert_sw:
@@ -29,9 +51,11 @@ assert_lui:
 assert_andi:
 	addi	$t7,$0,1
 	bne		$t1,$t7,assert_andi
-	addi	$t7,$0,-1
+	lui		$t7,0xffff
+	srl		$t7,$t7,16
 	bne		$t2,$t7,assert_andi
-	addi	$t7,$0,0xfffe
+	lui		$t7,0xfffe
+	srl		$t7,$t7,16
 	bne		$t3,$t7,assert_andi
 
 	# slti, sltiu

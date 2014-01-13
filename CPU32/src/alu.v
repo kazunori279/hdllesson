@@ -26,6 +26,7 @@ module alu (
   always_comb begin
     case (cpath[`CP_ALU_SRC])
       `ALU_SRC_IMM: rt_or_imm = {{16{inst[15]}}, inst[`I_IMM]}; // sign extended immediate
+      `ALU_SRC_IMU: rt_or_imm = {16'b0, inst[`I_IMM]}; // zero extended immediate
       `ALU_SRC_REG: rt_or_imm = rt;
       default:      rt_or_imm = `B_WORD'bx;
     endcase
