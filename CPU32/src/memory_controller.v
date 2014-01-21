@@ -50,23 +50,32 @@ module memory_controller (
       `OP_lw:   mem_ctrl = {`MEM_RW_R, `MEM_WIDTH_W, `MEM_SIGN_T};
       `OP_lbu:  mem_ctrl = {`MEM_RW_R, `MEM_WIDTH_B, `MEM_SIGN_F};
       `OP_lhu:  mem_ctrl = {`MEM_RW_R, `MEM_WIDTH_H, `MEM_SIGN_F};
-      `OP_sb:   mem_ctrl = {`MEM_RW_W, `MEM_WIDTH_B, `MEM_SIGN_T};
-      `OP_sh:   mem_ctrl = {`MEM_RW_W, `MEM_WIDTH_H, `MEM_SIGN_T};
-      `OP_sw:   mem_ctrl = {`MEM_RW_W, `MEM_WIDTH_W, `MEM_SIGN_T};
+      `OP_sb:   mem_ctrl = {`MEM_RW_W, `MEM_WIDTH_B, `MEM_SIGN_x};
+      `OP_sh:   mem_ctrl = {`MEM_RW_W, `MEM_WIDTH_H, `MEM_SIGN_x};
+      `OP_sw:   mem_ctrl = {`MEM_RW_W, `MEM_WIDTH_W, `MEM_SIGN_x};
       default:  mem_ctrl = {`MEM_RW_x, `MEM_WIDTH_x, `MEM_SIGN_x};
     endcase
   end
   
-  // read/write data alignment and sign extension
+  // read data alignment and sign extension
   wire [15:0] word_adrs = adrs >> 2;
-  wire [5:0] align_amt = adrs[1:0] << 3;
-  wire [`WORD] word_data = ram[word_adrs];
-  wire [`WORD] aligned_data = word_data >> align_amt;
+  wire [4:0] align_amt = adrs[1:0] << 3;
+  wire [`WORD] aligned_rd_data = ram[word_adrs] >> align_amt;
   assign q =
-    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_W ? aligned_data :
-    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_H ? {{16{aligned_data[15] & mem_ctrl[`MEM_SIGN]}}, aligned_data[15:0]} :
-    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_B ? {{24{aligned_data[7] & mem_ctrl[`MEM_SIGN]}}, aligned_data[7:0]} :
+    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_W ? aligned_rd_data :
+    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_H ? {{16{aligned_rd_data[15] & mem_ctrl[`MEM_SIGN]}}, aligned_rd_data[15:0]} :
+    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_B ? {{24{aligned_rd_data[7] & mem_ctrl[`MEM_SIGN]}}, aligned_rd_data[7:0]} :
     32'bx;
+
+  // write data alignment and overwrite to existing word
+  wire [`WORD] aligned_wr_data = data << align_amt;
+  wire [`WORD] wr_mask =
+    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_W ? 32'hffffffff :
+    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_H ? 32'h0000ffff :
+    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_B ? 32'h000000ff :
+    32'bx;  
+  wire [`WORD] aligned_mask = ~(wr_mask << align_amt);
+  wire [`WORD] wr_data = (ram[word_adrs] & aligned_mask) | aligned_wr_data;
 
   // reset and write data
   wire ram_wr_en = mem_ctrl[`MEM_RW] === `MEM_RW_W;
@@ -78,7 +87,7 @@ module memory_controller (
       end
     end else 
       if (ram_wr_en)
-        ram[word_adrs] <= data;
+        ram[word_adrs] <= wr_data;
   end
-
+  
 endmodule

@@ -3,23 +3,146 @@
 # (each assertion will make an infinite loop if fails)
 #
 
+	# sh0
+	nop
+	addi	$t0,$0,-1
+	sw		$t0,0x500
+	addi	$t0,$0,0x0001
+	sh		$t0,0x500
+assert_sh0:
+	lw		$t1,0x500
+	lui		$t7,0xffff
+	ori		$t7,$t7,0x0001
+	bne		$t1,$t7,assert_sh0
+
+	# sh2
+	nop
+	addi	$t0,$0,-1
+	sw		$t0,0x500
+	addi	$t0,$0,0x0001
+	sh		$t0,0x502
+assert_sh2:
+	lw		$t1,0x500
+	lui		$t7,0x0001
+	ori		$t7,$t7,0xffff
+	bne		$t1,$t7,assert_sh2
+
+	# sb0
+	nop
+	addi	$t0,$0,-1
+	sw		$t0,0x500
+	addi	$t0,$0,0x01
+	sb		$t0,0x500
+assert_sb0:
+	lw		$t1,0x500
+	lui		$t7,0xffff
+	ori		$t7,$t7,0xff01
+	bne		$t1,$t7,assert_sb0
+
+	# sb1
+	nop
+	addi	$t0,$0,-1
+	sw		$t0,0x500
+	addi	$t0,$0,0x01
+	sb		$t0,0x501
+assert_sb1:
+	lw		$t1,0x500
+	lui		$t7,0xffff
+	ori		$t7,$t7,0x01ff
+	bne		$t1,$t7,assert_sb1
+
+	# sb2
+	nop
+	addi	$t0,$0,-1
+	sw		$t0,0x500
+	addi	$t0,$0,0x01
+	sb		$t0,0x502
+assert_sb2:
+	lw		$t1,0x500
+	lui		$t7,0xff01
+	ori		$t7,$t7,0xffff
+	bne		$t1,$t7,assert_sb2
+
+	# sb3
+	nop
+	addi	$t0,$0,-1
+	sw		$t0,0x500
+	addi	$t0,$0,0x01
+	sb		$t0,0x503
+assert_sb3:
+	lw		$t1,0x500
+	lui		$t7,0x01ff
+	ori		$t7,$t7,0xffff
+	bne		$t1,$t7,assert_sb3
+
+	# lhu
+	nop
+	lui		$t0,0x0102
+	ori		$t0,$t0,0xf3f4
+	sw		$t0,0x500
+	lhu		$t0,0x500
+	lhu		$t1,0x502
+assert_lhu0:
+	addi	$t7,$0,0
+	ori		$t7,$t7,0xf3f4
+	bne		$t0,$t7,assert_lhu0
+assert_lhu1:
+	addi	$t7,$0,0x0102
+	bne		$t1,$t7,assert_lhu1
+
+	# lh
+	nop
+	lui		$t0,0x0102
+	ori		$t0,$t0,0xf3f4
+	sw		$t0,0x500
+	lh		$t0,0x500
+	lh		$t1,0x502
+assert_lh0:
+	addi	$t7,$0,0xf3f4
+	bne		$t0,$t7,assert_lh0
+assert_lh1:
+	addi	$t7,$0,0x0102
+	bne		$t1,$t7,assert_lh1
+
+	# lbu
+	nop
+	lui		$t0,0xf102
+	ori		$t0,$t0,0xf304
+	sw		$t0,0x500
+	lbu		$t0,0x500
+	lbu		$t1,0x501
+	lbu		$t2,0x502
+	lbu		$t3,0x503
+assert_lbu0:
+	addi	$t7,$0,0x0004
+	bne		$t0,$t7,assert_lbu0
+assert_lbu1:
+	addi	$t7,$0,0x00f3
+	bne		$t1,$t7,assert_lbu1
+assert_lbu2:
+	addi	$t7,$0,0x0002
+	bne		$t2,$t7,assert_lbu2
+assert_lbu3:
+	addi	$t7,$0,0x00f1
+	bne		$t3,$t7,assert_lbu3
+
 	# lb
 	nop
 	lui		$t0,0xf102
 	ori		$t0,$t0,0xf304
-	sw		$t0,0x40
-	lb		$t0,0x40
-	lb		$t1,0x41
-	lb		$t2,0x42
-	lb		$t3,0x43
+	sw		$t0,0x500
+	lb		$t0,0x500
+	lb		$t1,0x501
+	lb		$t2,0x502
+	lb		$t3,0x503
 assert_lb0:
-	addi	$t7,$0,0x04
+	addi	$t7,$0,0x0004
 	bne		$t0,$t7,assert_lb0
 assert_lb1:
 	addi	$t7,$0,0xfff3
 	bne		$t1,$t7,assert_lb1
 assert_lb2:
-	addi	$t7,$0,0x02
+	addi	$t7,$0,0x0002
 	bne		$t2,$t7,assert_lb2
 assert_lb3:
 	addi	$t7,$0,0xfff1
