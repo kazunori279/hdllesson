@@ -61,7 +61,7 @@ module alu (
       `R_nor:     result = ~(rs | rt_or_imm);
       `R_slt:     result = $signed(rs) < $signed(rt_or_imm) ? 32'b1 : 32'b0;
       `R_sltu:    result = $unsigned(rs) < $unsigned(rt_or_imm) ? 32'b1 : 32'b0;
-      `R_lui:     result = {32'b0, rt_or_imm, 16'b0};
+      `R_lui:     result = {16'b0, rt_or_imm, 16'b0};
       default:    result = `B_DWORD'bx; // unsupported operation
     endcase
   end

@@ -13,11 +13,13 @@ module register_file (
   input reset,
   input [4:0] rd_adrs_a,
   input [4:0] rd_adrs_b,
+  input [4:0] rd_adrs_c,  
   input [4:0] wr_adrs,
   input [`WORD] wr_data,
   input wr_en,
   output [`WORD] q_a,
-  output [`WORD] q_b
+  output [`WORD] q_b,
+  output [`WORD] q_c
 );
 
   // registers
@@ -38,5 +40,6 @@ module register_file (
   // read ports  
   assign q_a = regs[rd_adrs_a];
   assign q_b = regs[rd_adrs_b];
+  assign q_c = regs[rd_adrs_c];
   
 endmodule

@@ -12,7 +12,9 @@ module CPU (
   input clk_cpu,
   input reset,
   input [`WORD] inst,
-  output reg [`WORD] pc
+  input [4:0] reg_dbg_adrs,
+  output reg [`WORD] pc,
+  output reg [`WORD] reg_dbg_q
 );
 
   // wires and regs
@@ -52,11 +54,13 @@ module CPU (
     .reset(reset),
     .rd_adrs_a(inst[`I_RS]),
     .rd_adrs_b(inst[`I_RT]),
+	 .rd_adrs_c(reg_dbg_adrs),
     .wr_adrs(reg_wr_adrs),
     .wr_data(reg_wr_data),
     .wr_en(cpath[`CP_REG_WR]),
     .q_a(reg_rd_data_rs),
-    .q_b(reg_rd_data_rt)
+    .q_b(reg_rd_data_rt),
+	 .q_c(reg_dbg_q)
   );
 
   // hilo register
