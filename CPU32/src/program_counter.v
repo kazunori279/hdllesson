@@ -11,27 +11,24 @@
 module program_counter (
   input   clk_cpu,
   input   reset,
-  input [`WORD] inst,
+  input [31:0] inst,
   input [`CPATH] cpath,
-  input [`DWORD] alu_result,
-  output reg [`WORD] pc
+  input [63:0] alu_result,
+  output reg [31:0] pc
 );
 
   // calculate addresses
-  wire [`WORD] jmp_addr, brnc_addr, next_addr;
+  wire [31:0] jmp_addr, brnc_addr, next_addr;
   assign next_addr = pc + 32'd4;
   assign jmp_addr = inst[`I_ADDR] << 2;
   assign brnc_addr = {{14{inst[15]}}, inst[`I_IMM], 2'b00} + next_addr; // sign extended imm + 2 bit shift
-  
-  // check if alu had unsupported operation
-  wire alu_unsupported_op = inst[`I_OP] == `OP_R && alu_result === `B_DWORD'bx;
   
   // program counter and branch logic
   always_ff @(posedge clk_cpu, posedge reset) begin
     if (reset) begin
       pc <= `START_ADRS;
     end else begin
-      if (cpath[`CP_EXCP] || alu_unsupported_op) // exceptions
+      if (cpath[`CP_EXCP]) // exceptions
         pc <= `EXCP_ADRS;
       else begin
         case (inst[`I_OP])

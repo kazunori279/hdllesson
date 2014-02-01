@@ -6,8 +6,8 @@
   
  */
 
-// CPU prescaling (1 cycle per sec)
-`define CPU_CLK_PRESCALE 32'd49999999
+// CPU prescaling (10 cycle per sec)
+`define CPU_CLK_PRESCALE 32'd4999999
 //`define CPU_CLK_PRESCALE 32'd1
 
 // timing definitions for tests  
@@ -17,18 +17,6 @@
 `define DELAY 2
 `define STROB 18
 `define HSTRB 8
-
-// data widths
-`define B_BYTE  8
-`define B_HWORD 16
-`define B_WORD  32
-`define B_DWORD 64
-`define B_QWORD 128
-`define BYTE    `B_BYTE-1:0
-`define HWORD   `B_HWORD-1:0
-`define WORD    `B_WORD-1:0
-`define DWORD   `B_DWORD-1:0
-`define QWORD   `B_QWORD-1:0
 
 // number of registers
 `define N_REGS 32
@@ -91,7 +79,6 @@
 `define OP_swcl   6'b111001
 
 // R-type instructions
-`define R_x       6'bxxxxxx
 `define R_sll     6'b000000
 `define R_srl     6'b000010
 `define R_sra     6'b000011
@@ -148,36 +135,30 @@
 `define CPATH           `CP_END:`CP_START
 
 // REG_WR: write to the destination register if true
-`define REG_WR_X      1'bx
 `define REG_WR_F      1'b0
 `define REG_WR_T      1'b1
 
 // REG_DST: the destination register (rt or rd)
-`define REG_DST_X     1'bx
 `define REG_DST_RT    1'b0
 `define REG_DST_RD    1'b1
 
 // REG_SRC: the source (alu or ram) to write to the destination register
-`define REG_SRC_X     1'bx
 `define REG_SRC_ALU   1'b0
 `define REG_SRC_RAM   1'b1
 
 // ALU_SRC: the source (a register, immediate signed or immediate unsigned) to pass to ALU
-`define ALU_SRC_X     2'bxx
 `define ALU_SRC_REG   2'b00
 `define ALU_SRC_IMM   2'b01
 `define ALU_SRC_IMU   2'b10
 
 /*
 // RAM_RD: read from RAM
-`define RAM_RD_X      2'bxx
 `define RAM_RD_F      2'b00
 `define RAM_RD_BYTE   2'b01 // read a LSB byte
 `define RAM_RD_HALF   2'b10 // read a LSB half word
 `define RAM_RD_WORD   2'b11 // read a full word
 
 // RAM_WR: write to RAM
-`define RAM_WR_X      2'bxx
 `define RAM_WR_F      2'b00
 `define RAM_WR_BYTE   2'b01 // write a LSB byte
 `define RAM_WR_HALF   2'b10 // write a LSB half word
@@ -185,7 +166,6 @@
 */
 
 // EXCP: stop the CPU if true
-`define EXCP_X         1'bx
 `define EXCP_F         1'b0
 `define EXCP_T         1'b1
 

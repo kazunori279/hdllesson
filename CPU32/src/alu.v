@@ -11,24 +11,24 @@
 module alu (
   input   clk_cpu,
   input   reset,
-  input   [`WORD] pc,
-  input   [`WORD] inst,
+  input   [31:0] pc,
+  input   [31:0] inst,
   input   [`CPATH] cpath,
-  input   [`WORD] rs,
-  input   [`WORD] rt,
-  input   [`DWORD] hilo_q,
-  output  reg [`DWORD] result,
+  input   [31:0] rs,
+  input   [31:0] rt,
+  input   [63:0] hilo_q,
+  output  reg [63:0] result,
   output  reg hilo_wr_en
 );
 
   // mux to switch rt or imm
-  reg [`WORD] rt_or_imm;
+  reg [31:0] rt_or_imm;
   always_comb begin
     case (cpath[`CP_ALU_SRC])
       `ALU_SRC_IMM: rt_or_imm = {{16{inst[15]}}, inst[`I_IMM]}; // sign extended immediate
       `ALU_SRC_IMU: rt_or_imm = {16'b0, inst[`I_IMM]}; // zero extended immediate
       `ALU_SRC_REG: rt_or_imm = rt;
-      default:      rt_or_imm = `B_WORD'bx;
+      default:      rt_or_imm = 32'b0;
     endcase
   end
   
@@ -41,8 +41,8 @@ module alu (
       `R_sllv:    result = rt_or_imm << rs[4:0];
       `R_srlv:    result = rt_or_imm >> rs[4:0];
       `R_srav:    result = $signed(rt_or_imm) >>> rs[4:0];
-      `R_jr:      result = {rs, `B_WORD'b0 };        // jump to [rs]
-      `R_jalr:    result = {rs, (pc + `B_WORD'd8) }; // jump to [rs], $ra = PC + 8 (incl. delay slot)
+      `R_jr:      result = {rs, 32'b0 };        // jump to [rs]
+      `R_jalr:    result = {rs, (pc + 32'd8) }; // jump to [rs], $ra = PC + 8 (incl. delay slot)
       `R_mfhi:    result = hilo_q[63:32];
       `R_mthi:    result = {rs, hilo_q[31:0]};
       `R_mflo:    result = hilo_q[31:0];
@@ -59,10 +59,10 @@ module alu (
       `R_or:      result = rs | rt_or_imm;
       `R_xor:     result = rs ^ rt_or_imm;
       `R_nor:     result = ~(rs | rt_or_imm);
-      `R_slt:     result = $signed(rs) < $signed(rt_or_imm) ? 32'b1 : 32'b0;
-      `R_sltu:    result = $unsigned(rs) < $unsigned(rt_or_imm) ? 32'b1 : 32'b0;
+      `R_slt:     result = $signed(rs) < $signed(rt_or_imm) ? 64'b1 : 64'b0;
+      `R_sltu:    result = $unsigned(rs) < $unsigned(rt_or_imm) ? 64'b1 : 64'b0;
       `R_lui:     result = {16'b0, rt_or_imm, 16'b0};
-      default:    result = `B_DWORD'bx; // unsupported operation
+      default:    result = 64'b0; // unsupported operation
     endcase
   end
   

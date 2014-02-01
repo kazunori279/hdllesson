@@ -15,10 +15,10 @@ reg reset;
 reg [4:0] rd_adrs_a;
 reg [4:0] rd_adrs_b;
 reg [4:0] wr_adrs;
-reg [`WORD] wr_data;
+reg [31:0] wr_data;
 reg wr_en;
-wire [`WORD] q_a;
-wire [`WORD] q_b;
+wire [31:0] q_a;
+wire [31:0] q_b;
 
 register_file register_file0(
   .clk_cpu(clk_cpu),

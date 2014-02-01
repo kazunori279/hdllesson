@@ -11,18 +11,18 @@
 module CPU (
   input clk_cpu,
   input reset,
-  input [`WORD] inst,
+  input [31:0] inst,
   input [4:0] reg_dbg_adrs,
-  output reg [`WORD] pc,
-  output reg [`WORD] reg_dbg_q
+  output reg [31:0] pc,
+  output reg [31:0] reg_dbg_q
 );
 
   // wires and regs
-  wire [`DWORD] alu_result;
+  wire [63:0] alu_result;
   wire [`CPATH] cpath;
-  wire [`WORD] reg_rd_data_rs, reg_rd_data_rt;
-  wire [`WORD] ram_rd_data;
-  wire [`DWORD] reg_rd_data_hilo;
+  wire [31:0] reg_rd_data_rs, reg_rd_data_rt;
+  wire [31:0] ram_rd_data;
+  wire [63:0] reg_rd_data_hilo;
   
   // program counter
   program_counter program_counter0(
@@ -39,14 +39,14 @@ module CPU (
   assign reg_wr_adrs = 
     cpath[`CP_REG_DST] === `REG_DST_RT ? inst[`I_RT] :
     cpath[`CP_REG_DST] === `REG_DST_RD ? inst[`I_RD] :
-    5'bx;
+    5'b0;
 
   // mux for register write source
-  wire [`WORD] reg_wr_data;
+  wire [31:0] reg_wr_data;
   assign reg_wr_data = 
-    cpath[`CP_REG_SRC] === `REG_SRC_ALU ? alu_result[`WORD] : 
+    cpath[`CP_REG_SRC] === `REG_SRC_ALU ? alu_result[31:0] : 
     cpath[`CP_REG_SRC] === `REG_SRC_RAM ? ram_rd_data :
-    `B_WORD'bx;
+    32'b0;
   
   // register file
   register_file register_file0(
@@ -98,7 +98,7 @@ module CPU (
     .clk_cpu(clk_cpu),
     .reset(reset),
     .pc(pc),
-    .adrs(alu_result[`WORD]),
+    .adrs(alu_result[31:0]),
     .data(reg_rd_data_rt),
     .inst(inst),
     .q(ram_rd_data)

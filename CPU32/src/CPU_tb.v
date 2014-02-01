@@ -12,8 +12,8 @@ module CPU_tb;
 
 reg clk_cpu;
 reg reset;
-reg [`WORD] test_rom[0:1023];
-wire [`WORD] pc;
+reg [31:0] test_rom[0:1023];
+wire [31:0] pc;
 
 // CPU
 CPU CPU0(

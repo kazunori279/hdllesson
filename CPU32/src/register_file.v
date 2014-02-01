@@ -15,22 +15,22 @@ module register_file (
   input [4:0] rd_adrs_b,
   input [4:0] rd_adrs_c,  
   input [4:0] wr_adrs,
-  input [`WORD] wr_data,
+  input [31:0] wr_data,
   input wr_en,
-  output [`WORD] q_a,
-  output [`WORD] q_b,
-  output [`WORD] q_c
+  output [31:0] q_a,
+  output [31:0] q_b,
+  output [31:0] q_c
 );
 
   // registers
-  reg [`WORD] regs[0:`N_REGS - 1];
+  reg [31:0] regs[0:`N_REGS - 1];
 
   // reset and write data
   integer i;  
   always_ff @(posedge clk_cpu, posedge reset) begin
     if (reset) begin
       for (i = 0; i < `N_REGS; i = i + 1) begin
-        regs[i] <= `B_WORD'd0;
+        regs[i] <= 32'd0;
       end
     end else 
       if (wr_en && wr_adrs !== 5'd0) // you can't write to $0

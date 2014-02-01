@@ -9,7 +9,7 @@
 `include "src/defines.v"
 
 module decoder (
-  input   [`WORD] inst,
+  input   [31:0] inst,
   output  reg [`CPATH] cpath
 );
 
@@ -17,11 +17,11 @@ module decoder (
   always_comb begin
     case (inst[`I_OP])
       `OP_R:        cpath = {`REG_SRC_ALU, `REG_DST_RD, `REG_WR_T, inst[`I_FUNC], `ALU_SRC_REG, `EXCP_F};
-      `OP_bltz:     cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_F};
-      `OP_beq:      cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_sub, `ALU_SRC_REG, `EXCP_F};
-      `OP_bne:      cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_sub, `ALU_SRC_REG, `EXCP_F};
-      `OP_blez:     cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_F};
-      `OP_bgtz:     cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_F};
+      `OP_bltz:     cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_F};
+      `OP_beq:      cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_sub, `ALU_SRC_REG, `EXCP_F};
+      `OP_bne:      cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_sub, `ALU_SRC_REG, `EXCP_F};
+      `OP_blez:     cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_F};
+      `OP_bgtz:     cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_F};
       `OP_addi:     cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_T, `R_add, `ALU_SRC_IMM, `EXCP_F};
       `OP_addiu:    cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_T, `R_add, `ALU_SRC_IMM, `EXCP_F};
       `OP_slti:     cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_T, `R_slt, `ALU_SRC_IMM, `EXCP_F};
@@ -35,11 +35,11 @@ module decoder (
       `OP_lw:       cpath = {`REG_SRC_RAM, `REG_DST_RT, `REG_WR_T, `R_add, `ALU_SRC_IMU, `EXCP_F};
       `OP_lbu:      cpath = {`REG_SRC_RAM, `REG_DST_RT, `REG_WR_T, `R_add, `ALU_SRC_IMU, `EXCP_F};
       `OP_lhu:      cpath = {`REG_SRC_RAM, `REG_DST_RT, `REG_WR_T, `R_add, `ALU_SRC_IMU, `EXCP_F};
-      `OP_sb:       cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_add, `ALU_SRC_IMU, `EXCP_F};
-      `OP_sh:       cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_add, `ALU_SRC_IMU, `EXCP_F};
-      `OP_sw:       cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_add, `ALU_SRC_IMU, `EXCP_F};
-      `OP_j:        cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_x,   `ALU_SRC_X,   `EXCP_F};
-      default:      cpath = {`REG_SRC_X,   `REG_DST_X,  `REG_WR_F, `R_x,   `ALU_SRC_X,   `EXCP_T};
+      `OP_sb:       cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_IMU, `EXCP_F};
+      `OP_sh:       cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_IMU, `EXCP_F};
+      `OP_sw:       cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_IMU, `EXCP_F};
+      `OP_j:        cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_F};
+      default:      cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_T};
     endcase
   end
 
