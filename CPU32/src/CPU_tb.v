@@ -10,30 +10,33 @@
 
 module CPU_tb;
 
-reg clk_cpu;
+reg clk_cpu, clk_ram;
 reg reset;
-reg [31:0] test_rom[0:1023];
-wire [31:0] pc;
+wire [31:0] pc, reg_dbg_q;
 
 // CPU
 CPU CPU0(
   .clk_cpu(clk_cpu),
+  .clk_ram(clk_ram),
   .reset(reset),
-  .inst(test_rom[(pc - `START_ADRS) / 4]),
-  .pc(pc)
+  .reg_dbg_adrs(5'b0),
+  .reg_dbg_q(reg_dbg_q)
 );
 
-// clock
+// CPU clock
 initial begin
-    clk_cpu = 0;
-    forever #`HCYCL clk_cpu = !clk_cpu;
+  clk_cpu = 0;
+  forever #`HCYCL clk_cpu = !clk_cpu;
+end
+
+// RAM clock
+initial begin
+  clk_ram = 0;
+  forever #`MCYCL clk_ram = !clk_ram;
 end
 
 // test
 initial begin
-  
-  // load test instructions
-  $readmemh("src/inst_tests.txt", test_rom);
   
   // init regs
   reset = 0;
@@ -47,7 +50,7 @@ end
 task test_reset_button;
 begin
   reset = 1;
-  repeat(5) @(posedge clk_cpu);
+  repeat(10) @(posedge clk_cpu);
   reset = 0;
 end
 endtask

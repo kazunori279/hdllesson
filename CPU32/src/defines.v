@@ -14,15 +14,13 @@
 `timescale 1ns/1ns
 `define CYCLE 20
 `define HCYCL 10
+`define MCYCL 5		// half cycle for BRAM
 `define DELAY 2
 `define STROB 18
 `define HSTRB 8
 
 // number of registers
 `define N_REGS 32
-
-// RAM size (in number of words)
-`define N_RAM 10
 
 // special addresses
 `define START_ADRS	32'h00000000

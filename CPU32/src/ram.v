@@ -1,9 +1,8 @@
 /*
 
-  memory_controller.v
+  ram.v
   
-  Represents a memory controller for FF-based RAM implementation. 
-  Provides functions like:
+  Represents a memory controller for BRAM. Provides functions like:
   - read an instruction at PC address
   - decode the instruction to control the following RAM access
   -- read/write data at specified address 
@@ -13,25 +12,18 @@
 
 `include "src/defines.v"
 
-`define N_RAM 10 // RAM word size
-
-module memory_controller (
+module ram (
   input clk_cpu,
+  input clk_ram,
   input reset,
   input [31:0] pc,
   input [31:0] adrs,
   input [31:0] data,
-  input [31:0] inst, // TODO change to output later
-  output [31:0] q,
-  output reg ram_wr_en,
-  output reg [3:0] mem_ctrl
+  output reg [31:0] inst,
+  output reg [31:0] q
 );
 
-  // FF for RAM (the number of words is defined by `N_RAM)
-  reg [31:0] ram[0:`N_RAM - 1];
- 
   // memory access controls
-//  reg [3:0] mem_ctrl;
   `define MEM_SIGN    0:0
   `define MEM_SIGN_F  1'b0
   `define MEM_SIGN_T  1'b1
@@ -44,7 +36,7 @@ module memory_controller (
   `define MEM_RW_W    1'b1
   
   // read and decode an instruction
-//  assign inst = ram[pc >> 2];
+  reg [3:0] mem_ctrl;
   always_comb begin
     case(inst[`I_OP])
       `OP_lb:   mem_ctrl = {`MEM_RW_R, `MEM_WIDTH_B, `MEM_SIGN_T};
@@ -60,9 +52,10 @@ module memory_controller (
   end
   
   // read data alignment and sign extension
+  wire [31:0] bram_q;
   wire [15:0] word_adrs = adrs[15:2] >> 2;
-  wire [31:0] aligned_rd_data = ram[word_adrs] >> $unsigned(
-    adrs[1:0] === 2'b00 ? 0 :
+  wire [31:0] aligned_rd_data = bram_q >> $unsigned(
+    adrs[1:0] === 2'b00 ? 0 :    
     adrs[1:0] === 2'b01 ? 8 :
     adrs[1:0] === 2'b10 ? 16 : 24);
   assign q =
@@ -71,33 +64,43 @@ module memory_controller (
     mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_B ? {{24{aligned_rd_data[7] & mem_ctrl[`MEM_SIGN]}}, aligned_rd_data[7:0]} :
     32'b0;
 
-  // write data alignment and overwrite to existing word
+  // write data alignment
   wire [31:0] aligned_wr_data = data << $unsigned(
     adrs[1:0] === 2'b00 ? 0 :
     adrs[1:0] === 2'b01 ? 8 : 
     adrs[1:0] === 2'b10 ? 16 : 24);
-  wire [31:0] wr_mask =
-    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_W ? 32'hffffffff :
-    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_H ? 32'h0000ffff :
-    mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_B ? 32'h000000ff :
-    32'b0;
-  wire [31:0] aligned_mask = ~(wr_mask << $unsigned(
-    adrs[1:0] === 2'b00 ? 0 :
-    adrs[1:0] === 2'b01 ? 8 : 
-    adrs[1:0] === 2'b10 ? 16 : 24));
-  wire [31:0] wr_data = (ram[word_adrs] & aligned_mask) | aligned_wr_data;
-
-  // reset and write data
-  assign ram_wr_en = mem_ctrl[`MEM_RW] === `MEM_RW_W;
-  integer i;
-  always_ff @(posedge clk_cpu, posedge reset) begin
-    if (reset) begin
-      for (i = 0; i < `N_RAM; i = i + 1) begin
-        ram[i] <= 32'd0;
-      end
-    end else 
-      if (ram_wr_en)
-        ram[word_adrs] <= wr_data;
+    
+  // byte enable calculation
+  wire wr_en = mem_ctrl[`MEM_RW] === `MEM_RW_W;
+  reg [3:0] bt_en;
+  always_comb begin
+    if (wr_en)
+      case (mem_ctrl[`MEM_WIDTH])
+        `MEM_WIDTH_W : bt_en = 4'b1111;
+        `MEM_WIDTH_H : bt_en = (adrs[1:0] === 2'b00) ? 4'b0011 : 4'b1100;
+        `MEM_WIDTH_B : bt_en =
+          	adrs[1:0] === 2'b00 ? 4'b0001 :
+          	adrs[1:0] === 2'b01 ? 4'b0010 : 
+          adrs[1:0] === 2'b10 ? 4'b0100 : 4'b1000;
+        default: bt_en = 4'b1111;
+      endcase
+    else
+      bt_en = 4'b1111;
   end
+
+  // BRAM (port_a = PC/inst, port_b = rd/wr)
+  bram bram0 (
+    .address_a(pc[17:2]),
+	  .address_b(word_adrs),
+	  .byteena_a(4'b0),
+	  .byteena_b(bt_en),	
+	  .clock(clk_ram),
+	  .data_a(32'b0),
+	  .data_b(aligned_wr_data),
+	  .wren_a(1'b0),
+	  .wren_b(wr_en),
+	  .q_a(inst),
+	  .q_b(bram_q)
+  );
   
 endmodule

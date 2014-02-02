@@ -10,18 +10,17 @@
 
 module CPU (
   input clk_cpu,
+  input clk_ram,
   input reset,
-  input [31:0] inst,
   input [4:0] reg_dbg_adrs,
-  output reg [31:0] pc,
-  output reg [31:0] reg_dbg_q
+  output reg [31:0] reg_dbg_q,
+  output [31:0] pc
 );
 
   // wires and regs
   wire [63:0] alu_result;
   wire [`CPATH] cpath;
-  wire [31:0] reg_rd_data_rs, reg_rd_data_rt;
-  wire [31:0] ram_rd_data;
+  wire [31:0] reg_rd_data_rs, reg_rd_data_rt, ram_rd_data, inst;
   wire [63:0] reg_rd_data_hilo;
   
   // program counter
@@ -35,8 +34,7 @@ module CPU (
   );
   
   // mux for register write destination
-  wire [4:0] reg_wr_adrs;
-  assign reg_wr_adrs = 
+  wire [4:0] reg_wr_adrs = 
     cpath[`CP_REG_DST] === `REG_DST_RT ? inst[`I_RT] :
     cpath[`CP_REG_DST] === `REG_DST_RD ? inst[`I_RD] :
     5'b0;
@@ -54,7 +52,7 @@ module CPU (
     .reset(reset),
     .rd_adrs_a(inst[`I_RS]),
     .rd_adrs_b(inst[`I_RT]),
-	 .rd_adrs_c(reg_dbg_adrs),
+	  .rd_adrs_c(reg_dbg_adrs),
     .wr_adrs(reg_wr_adrs),
     .wr_data(reg_wr_data),
     .wr_en(cpath[`CP_REG_WR]),
@@ -93,9 +91,10 @@ module CPU (
     .cpath(cpath)
   );
   
-  // memory controller
-  memory_controller memory_controller0(
+  // ram
+  ram ram0(
     .clk_cpu(clk_cpu),
+    .clk_ram(clk_ram),
     .reset(reset),
     .pc(pc),
     .adrs(alu_result[31:0]),

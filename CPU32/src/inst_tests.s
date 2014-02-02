@@ -154,7 +154,7 @@ assert_lb3:
 	sw		$t0,0x500
 	lw		$t1,0x500
 assert_sw:
-	addi	$t7,1
+	addi	$t7,$0,1
 	bne		$t1,$t7,assert_sw
 
 	# lui
@@ -440,4 +440,7 @@ assert_sllv:
 	srav	$t2,$t0,$t2
 assert_srav:
 	bne		$t2,$t0,assert_srav
+
+assert_finished:
+	j		assert_finished
 

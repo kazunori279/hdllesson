@@ -27,31 +27,24 @@ module CPU32 (
   );
 
   // cpu clock prescaling
-  wire clk_cpu, clk_stp;
+  wire clk_cpu, clk_stp, clk_ram;
   clock_prescaler clock_prescaler0(
     .clk(clk), 
     .clk_cpu(clk_cpu),
-    .clk_stp(clk_stp)
+    .clk_stp(clk_stp),
+	 .clk_ram(clk_ram)
   );
 
-  // instruction rom
-  wire [31:0] inst;
-  wire [31:0] pc;
-  rom rom0(
-    .pc(pc), 
-    .inst(inst)
-  );
-  
   // CPU
-  wire [31:0] reg_dbg_q;
+  wire [31:0] reg_dbg_q, pc;
   wire [4:0] reg_dbg_adrs = sw[4:0];
   CPU CPU0(
     .clk_cpu(clk_cpu),
+	 .clk_ram(clk_ram),
     .reset(reset),
-    .inst(inst),
 	 .reg_dbg_adrs(reg_dbg_adrs),
-    .pc(pc),
-	 .reg_dbg_q(reg_dbg_q)
+	 .reg_dbg_q(reg_dbg_q),
+	 .pc(pc)
   );
   
   // LED display to show PC and registers
