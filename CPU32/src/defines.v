@@ -6,9 +6,9 @@
   
  */
 
-// CPU prescaling (10 cycle per sec)
-`define CPU_CLK_PRESCALE 32'd4999999
-//`define CPU_CLK_PRESCALE 32'd1
+// CPU clock prescaling 
+//`define CPU_CLK_PRESCALE 32'd4999999 // (10 cycle per sec)
+`define CPU_CLK_PRESCALE 32'd9
 
 // timing definitions for tests  
 `timescale 1ns/1ns
@@ -22,9 +22,13 @@
 // number of registers
 `define N_REGS 32
 
-// special addresses
-`define START_ADRS	32'h00000000
-`define EXCP_ADRS 	32'h80000180
+// memory mappings
+`define ADRS_TEXT_START	32'h00000000
+`define ADRS_STCK_END	32'h00007efc
+`define ADRS_GLBL_START	32'h00007f00
+`define ADRS_DBG_LED	32'h00007f00
+`define ADRS_DBG_SW		32'h00007ff0
+`define ADRS_EXCP 		32'hfffffff0
 
 //
 // Instruction Encodings
@@ -126,10 +130,10 @@
 `define CP_REG_WR_LSB   `CP_ALU_CTRL_LSB + 6
 `define CP_REG_WR       `CP_REG_WR_LSB:`CP_REG_WR_LSB
 `define CP_REG_DST_LSB  `CP_REG_WR_LSB + 1
-`define CP_REG_DST      `CP_REG_DST_LSB:`CP_REG_DST_LSB
-`define CP_REG_SRC_LSB  `CP_REG_DST_LSB + 1
-`define CP_REG_SRC      `CP_REG_SRC_LSB:`CP_REG_SRC_LSB
-`define CP_END          `CP_REG_SRC_LSB
+`define CP_REG_DST      `CP_REG_DST_LSB + 1:`CP_REG_DST_LSB
+`define CP_REG_SRC_LSB  `CP_REG_DST_LSB + 2
+`define CP_REG_SRC      `CP_REG_SRC_LSB + 1:`CP_REG_SRC_LSB
+`define CP_END          `CP_REG_SRC_LSB + 1
 `define CPATH           `CP_END:`CP_START
 
 // REG_WR: write to the destination register if true
@@ -137,31 +141,19 @@
 `define REG_WR_T      1'b1
 
 // REG_DST: the destination register (rt or rd)
-`define REG_DST_RT    1'b0
-`define REG_DST_RD    1'b1
+`define REG_DST_RT    2'b00
+`define REG_DST_RD    2'b01
+`define REG_DST_31    2'b10
 
 // REG_SRC: the source (alu or ram) to write to the destination register
-`define REG_SRC_ALU   1'b0
-`define REG_SRC_RAM   1'b1
+`define REG_SRC_ALU   2'b00
+`define REG_SRC_RAM   2'b01
+`define REG_SRC_PC    2'b10
 
 // ALU_SRC: the source (a register, immediate signed or immediate unsigned) to pass to ALU
 `define ALU_SRC_REG   2'b00
 `define ALU_SRC_IMM   2'b01
 `define ALU_SRC_IMU   2'b10
-
-/*
-// RAM_RD: read from RAM
-`define RAM_RD_F      2'b00
-`define RAM_RD_BYTE   2'b01 // read a LSB byte
-`define RAM_RD_HALF   2'b10 // read a LSB half word
-`define RAM_RD_WORD   2'b11 // read a full word
-
-// RAM_WR: write to RAM
-`define RAM_WR_F      2'b00
-`define RAM_WR_BYTE   2'b01 // write a LSB byte
-`define RAM_WR_HALF   2'b10 // write a LSB half word
-`define RAM_WR_WORD   2'b11 // write a full word
-*/
 
 // EXCP: stop the CPU if true
 `define EXCP_F         1'b0

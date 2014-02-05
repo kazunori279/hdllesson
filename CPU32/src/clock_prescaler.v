@@ -27,7 +27,6 @@ module clock_prescaler (
   assign clk_ram = ~clk_base;
   
   // clk_cpu register (clock for cpu)
-  reg cnt2 = 1'b0;
   always @(posedge clk_base) begin
     clk_cpu <= ~clk_cpu;
   end

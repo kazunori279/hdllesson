@@ -36,24 +36,30 @@ module CPU32 (
   );
 
   // CPU
-  wire [31:0] reg_dbg_q, pc;
-  wire [4:0] reg_dbg_adrs = sw[4:0];
+  wire [31:0] pc, inst, dbg_reg_q, dbg_led_q;
+  wire [4:0] dbg_reg_adrs = sw[4:0];
   CPU CPU0(
     .clk_cpu(clk_cpu),
-	 .clk_ram(clk_ram),
+	  .clk_ram(clk_ram),
     .reset(reset),
-	 .reg_dbg_adrs(reg_dbg_adrs),
-	 .reg_dbg_q(reg_dbg_q),
-	 .pc(pc)
+	  .dbg_reg_adrs(dbg_reg_adrs),
+	  .dbg_sw_input(sw[3:0]),
+	  .pc(pc),
+	  .inst(inst),
+	  .dbg_reg_q(dbg_reg_q),
+	  .dbg_led_q(dbg_led_q)
   );
   
-  // LED display to show PC and registers
-  // (sw9: pc or reg, sw8: hi or lo, sw4-0: reg adrs)
-  wire [15:0] led_output = sw[9:9] ? pc[15:0] : 
-	sw[8:8] ? reg_dbg_q[31:16] : reg_dbg_q[15:0];
-  led_decoder led_decoder0(led_output[3:0], clk_cpu, 1'b1, led0_n);
-  led_decoder led_decoder1(led_output[7:4], 1'b0, 1'b1, led1_n);
-  led_decoder led_decoder2(led_output[11:8], 1'b0, 1'b1, led2_n);
-  led_decoder led_decoder3(led_output[15:12], 1'b0, 1'b1, led3_n);
+  // LED display to show $7ff0, pc or registers
+  // sw9: off = $7ff0, on = pc or reg
+  // sw8: off = pc, on = reg
+  // sw7: off = [15:0], on = [31:16]
+  // sw4-0: reg adrs
+  wire [31:0] led_out_full = sw[9:9] ? (sw[8:8] ? dbg_reg_q : pc) : dbg_led_q;
+  wire [15:0] led_out_half = sw[7:7] ? led_out_full[31:16] : led_out_full[15:0]; 
+  led_decoder led_decoder0(led_out_half[3:0], clk_cpu, 1'b1, led0_n);
+  led_decoder led_decoder1(led_out_half[7:4], 1'b0, 1'b1, led1_n);
+  led_decoder led_decoder2(led_out_half[11:8], 1'b0, 1'b1, led2_n);
+  led_decoder led_decoder3(led_out_half[15:12], 1'b0, 1'b1, led3_n);
   
 endmodule

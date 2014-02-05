@@ -26,10 +26,10 @@ module program_counter (
   // program counter and branch logic
   always_ff @(posedge clk_cpu, posedge reset) begin
     if (reset) begin
-      pc <= `START_ADRS;
+      pc <= `ADRS_TEXT_START;
     end else begin
-      if (cpath[`CP_EXCP]) // exceptions
-        pc <= `EXCP_ADRS;
+      if (cpath[`CP_EXCP] || pc === `ADRS_EXCP || pc[1:0] !== 2'b00) // cpu halt
+        pc <= `ADRS_EXCP;
       else begin
         case (inst[`I_OP])
           `OP_R:
@@ -48,6 +48,7 @@ module program_counter (
           `OP_blez: pc <= $signed(alu_result) <= 0 ? brnc_addr : next_addr;
           `OP_bgtz: pc <= $signed(alu_result) > 0 ? brnc_addr : next_addr;
           `OP_j:    pc <= {pc[31:28], jmp_addr[27:0]};
+          `OP_jal:  pc <= {pc[31:28], jmp_addr[27:0]};
           default:  pc <= next_addr;
         endcase
       end

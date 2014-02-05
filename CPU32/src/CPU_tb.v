@@ -12,15 +12,19 @@ module CPU_tb;
 
 reg clk_cpu, clk_ram;
 reg reset;
-wire [31:0] pc, reg_dbg_q;
+wire [31:0] pc, inst, dbg_reg_q, dbg_led_q;
 
 // CPU
 CPU CPU0(
   .clk_cpu(clk_cpu),
   .clk_ram(clk_ram),
   .reset(reset),
-  .reg_dbg_adrs(5'b0),
-  .reg_dbg_q(reg_dbg_q)
+  .dbg_reg_adrs(5'b0),
+  .dbg_sw_input(4'b0),
+  .pc(pc),
+  .inst(inst),
+  .dbg_reg_q(dbg_reg_q),
+  .dbg_led_q(dbg_led_q)
 );
 
 // CPU clock

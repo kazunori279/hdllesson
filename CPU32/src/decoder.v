@@ -39,6 +39,7 @@ module decoder (
       `OP_sh:       cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_IMU, `EXCP_F};
       `OP_sw:       cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_IMU, `EXCP_F};
       `OP_j:        cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_F};
+      `OP_jal:      cpath = {`REG_SRC_PC,  `REG_DST_31, `REG_WR_T, `R_add, `ALU_SRC_REG, `EXCP_F};
       default:      cpath = {`REG_SRC_ALU, `REG_DST_RT, `REG_WR_F, `R_add, `ALU_SRC_REG, `EXCP_T};
     endcase
   end

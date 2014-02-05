@@ -30,7 +30,9 @@ module register_file (
   always_ff @(posedge clk_cpu, posedge reset) begin
     if (reset) begin
       for (i = 0; i < `N_REGS; i = i + 1) begin
-        regs[i] <= 32'd0;
+        if (i == 31) regs[i] <= `ADRS_EXCP; // set $ra initial value
+        else if (i == 29) regs[i] <= `ADRS_STCK_END; // set $sp initial value
+        else regs[i] <= 32'd0;
       end
     end else 
       if (wr_en && wr_adrs !== 5'd0) // you can't write to $0

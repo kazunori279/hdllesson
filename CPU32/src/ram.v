@@ -8,6 +8,13 @@
   -- read/write data at specified address 
   -- byte alighment and mask for byte/half-word load/store instructions
   
+  - Memory map: 
+  -- 0x0000 ->        : text
+  --        <- 0x7efc : stack
+  -- 0x7f00 -- 0x7fff : global
+  -- 0x7f00 : to display result on LED 
+  -- 0x7ff0 : to input params from sw3 - sw0
+  
   */
 
 `include "src/defines.v"
@@ -19,8 +26,10 @@ module ram (
   input [31:0] pc,
   input [31:0] adrs,
   input [31:0] data,
+  input [3:0] dbg_sw_input,
   output reg [31:0] inst,
-  output reg [31:0] q
+  output reg [31:0] q,
+  output reg [31:0] dbg_led_q
 );
 
   // memory access controls
@@ -53,12 +62,13 @@ module ram (
   
   // read data alignment and sign extension
   wire [31:0] bram_q;
-  wire [15:0] word_adrs = adrs[15:2] >> 2;
+  wire [29:0] word_adrs = adrs[31:2];
   wire [31:0] aligned_rd_data = bram_q >> $unsigned(
     adrs[1:0] === 2'b00 ? 0 :    
     adrs[1:0] === 2'b01 ? 8 :
     adrs[1:0] === 2'b10 ? 16 : 24);
   assign q =
+    adrs === `ADRS_DBG_SW ? {24'b0, dbg_sw_input} :
     mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_W ? aligned_rd_data :
     mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_H ? {{16{aligned_rd_data[15] & mem_ctrl[`MEM_SIGN]}}, aligned_rd_data[15:0]} :
     mem_ctrl[`MEM_WIDTH] === `MEM_WIDTH_B ? {{24{aligned_rd_data[7] & mem_ctrl[`MEM_SIGN]}}, aligned_rd_data[7:0]} :
@@ -87,11 +97,19 @@ module ram (
     else
       bt_en = 4'b1111;
   end
+  
+  // debug LED output
+  always_ff @(posedge clk_cpu, posedge reset) begin
+      if (reset)
+        dbg_led_q <= 32'b0;
+      else if (wr_en && adrs === `ADRS_DBG_LED)
+        dbg_led_q <= data;
+  end
 
   // BRAM (port_a = PC/inst, port_b = rd/wr)
   bram bram0 (
-    .address_a(pc[17:2]),
-	  .address_b(word_adrs),
+    .address_a(pc[14:2]),
+	  .address_b(word_adrs[12:0]),
 	  .byteena_a(4'b0),
 	  .byteena_b(bt_en),	
 	  .clock(clk_ram),

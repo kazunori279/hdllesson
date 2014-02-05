@@ -6,11 +6,11 @@
 	# sh0
 	nop
 	addi	$t0,$0,-1
-	sw		$t0,0x500
+	sw		$t0,0x7f00
 	addi	$t0,$0,0x0001
-	sh		$t0,0x500
+	sh		$t0,0x7f00
 assert_sh0:
-	lw		$t1,0x500
+	lw		$t1,0x7f00
 	lui		$t7,0xffff
 	ori		$t7,$t7,0x0001
 	bne		$t1,$t7,assert_sh0
@@ -18,11 +18,11 @@ assert_sh0:
 	# sh2
 	nop
 	addi	$t0,$0,-1
-	sw		$t0,0x500
+	sw		$t0,0x7f00
 	addi	$t0,$0,0x0001
-	sh		$t0,0x502
+	sh		$t0,0x7f02
 assert_sh2:
-	lw		$t1,0x500
+	lw		$t1,0x7f00
 	lui		$t7,0x0001
 	ori		$t7,$t7,0xffff
 	bne		$t1,$t7,assert_sh2
@@ -30,11 +30,11 @@ assert_sh2:
 	# sb0
 	nop
 	addi	$t0,$0,-1
-	sw		$t0,0x500
+	sw		$t0,0x7f00
 	addi	$t0,$0,0x01
-	sb		$t0,0x500
+	sb		$t0,0x7f00
 assert_sb0:
-	lw		$t1,0x500
+	lw		$t1,0x7f00
 	lui		$t7,0xffff
 	ori		$t7,$t7,0xff01
 	bne		$t1,$t7,assert_sb0
@@ -42,11 +42,11 @@ assert_sb0:
 	# sb1
 	nop
 	addi	$t0,$0,-1
-	sw		$t0,0x500
+	sw		$t0,0x7f00
 	addi	$t0,$0,0x01
-	sb		$t0,0x501
+	sb		$t0,0x7f01
 assert_sb1:
-	lw		$t1,0x500
+	lw		$t1,0x7f00
 	lui		$t7,0xffff
 	ori		$t7,$t7,0x01ff
 	bne		$t1,$t7,assert_sb1
@@ -54,11 +54,11 @@ assert_sb1:
 	# sb2
 	nop
 	addi	$t0,$0,-1
-	sw		$t0,0x500
+	sw		$t0,0x7f00
 	addi	$t0,$0,0x01
-	sb		$t0,0x502
+	sb		$t0,0x7f02
 assert_sb2:
-	lw		$t1,0x500
+	lw		$t1,0x7f00
 	lui		$t7,0xff01
 	ori		$t7,$t7,0xffff
 	bne		$t1,$t7,assert_sb2
@@ -66,11 +66,11 @@ assert_sb2:
 	# sb3
 	nop
 	addi	$t0,$0,-1
-	sw		$t0,0x500
+	sw		$t0,0x7f00
 	addi	$t0,$0,0x01
-	sb		$t0,0x503
+	sb		$t0,0x7f03
 assert_sb3:
-	lw		$t1,0x500
+	lw		$t1,0x7f00
 	lui		$t7,0x01ff
 	ori		$t7,$t7,0xffff
 	bne		$t1,$t7,assert_sb3
@@ -79,9 +79,9 @@ assert_sb3:
 	nop
 	lui		$t0,0x0102
 	ori		$t0,$t0,0xf3f4
-	sw		$t0,0x500
-	lhu		$t0,0x500
-	lhu		$t1,0x502
+	sw		$t0,0x7f00
+	lhu		$t0,0x7f00
+	lhu		$t1,0x7f02
 assert_lhu0:
 	addi	$t7,$0,0
 	ori		$t7,$t7,0xf3f4
@@ -94,9 +94,9 @@ assert_lhu1:
 	nop
 	lui		$t0,0x0102
 	ori		$t0,$t0,0xf3f4
-	sw		$t0,0x500
-	lh		$t0,0x500
-	lh		$t1,0x502
+	sw		$t0,0x7f00
+	lh		$t0,0x7f00
+	lh		$t1,0x7f02
 assert_lh0:
 	addi	$t7,$0,0xf3f4
 	bne		$t0,$t7,assert_lh0
@@ -108,11 +108,11 @@ assert_lh1:
 	nop
 	lui		$t0,0xf102
 	ori		$t0,$t0,0xf304
-	sw		$t0,0x500
-	lbu		$t0,0x500
-	lbu		$t1,0x501
-	lbu		$t2,0x502
-	lbu		$t3,0x503
+	sw		$t0,0x7f00
+	lbu		$t0,0x7f00
+	lbu		$t1,0x7f01
+	lbu		$t2,0x7f02
+	lbu		$t3,0x7f03
 assert_lbu0:
 	addi	$t7,$0,0x0004
 	bne		$t0,$t7,assert_lbu0
@@ -130,11 +130,11 @@ assert_lbu3:
 	nop
 	lui		$t0,0xf102
 	ori		$t0,$t0,0xf304
-	sw		$t0,0x500
-	lb		$t0,0x500
-	lb		$t1,0x501
-	lb		$t2,0x502
-	lb		$t3,0x503
+	sw		$t0,0x7f00
+	lb		$t0,0x7f00
+	lb		$t1,0x7f01
+	lb		$t2,0x7f02
+	lb		$t3,0x7f03
 assert_lb0:
 	addi	$t7,$0,0x0004
 	bne		$t0,$t7,assert_lb0
@@ -151,8 +151,8 @@ assert_lb3:
 	# sw, lw
 	nop
 	addi	$t0,$0,1
-	sw		$t0,0x500
-	lw		$t1,0x500
+	sw		$t0,0x7f00
+	lw		$t1,0x7f00
 assert_sw:
 	addi	$t7,$0,1
 	bne		$t1,$t7,assert_sw
@@ -269,6 +269,17 @@ assert_jalr:
 assert_jalr_next:
 	addi	$t7,$0,assert_jalr
 	bne		$31,$t7,assert_jalr_next
+
+	# jal
+	nop
+	jal		assert_jal_next
+assert_jal:
+	nop
+	nop
+	nop
+assert_jal_next:
+	addi	$t7,$0,assert_jal
+	bne		$31,$t7,assert_jal_next
 
 	# slt, sltu
 	nop
