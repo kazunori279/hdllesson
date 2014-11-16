@@ -41,10 +41,10 @@ func main() {
             fmt.Printf("%s", err)
             return
         }
+        total += l
         if l == 0 || total >= TEST_SIZE {
             break
         }
-        total += l
     }
 
     // disconnect
@@ -52,6 +52,6 @@ func main() {
 
     // reporting
     elapsed_time := time.Now().Sub(start_time)
-    fmt.Printf("processed %d bytes at %.2f Mbps\n", total * 10, float64(total * 10 * 8) / float64(elapsed_time.Seconds() * 1000000)) 
+    fmt.Printf("processed %d bytes at %.2f Mbps\n", total, float64(total * 8) / float64(elapsed_time.Seconds() * 1000000)) 
 }
 
