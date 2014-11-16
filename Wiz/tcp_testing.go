@@ -11,7 +11,7 @@ import "fmt"
 import "bufio"
 import "time"
 
-const TEST_SIZE = 100000 // test with 1MB data 
+const TEST_SIZE = 1000000 // test with 1MB data 
 const BUF_SIZE = 2 * 1000000 // buffer size = 2MB 
 
 func main() {
@@ -25,8 +25,8 @@ func main() {
 
     // sending random strings with a goroutine
     go func() {
-        for i := 0; i < TEST_SIZE; i++ {
-            fmt.Fprintf(conn, "0123456789")
+        for {
+            fmt.Fprintf(conn, "0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789")
         }
     }()
 
