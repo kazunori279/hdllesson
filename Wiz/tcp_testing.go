@@ -11,7 +11,8 @@ import "fmt"
 import "bufio"
 import "time"
 
-const TEST_SIZE = 100000 // times 10 bytes
+const TEST_SIZE = 100000 // test with 1MB data 
+const BUF_SIZE = 2 * 1000000 // buffer size = 2MB 
 
 func main() {
 
@@ -32,7 +33,7 @@ func main() {
     // receiving the strings
     var reader = bufio.NewReader(conn) 
     var total = 0
-    var buf []byte = make([]byte, 256)
+    var buf []byte = make([]byte, BUF_SIZE)
     var start_time = time.Now()
     for {
         l, err := reader.Read(buf)
