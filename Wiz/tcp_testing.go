@@ -1,7 +1,7 @@
 //
 // Tests TCP/IP connection bandwidth
 //
-// Usage: $ go run tcp_test.go
+// Usage: $ go run tcp_testing.go
 //
 
 package main
