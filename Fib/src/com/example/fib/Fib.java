@@ -4,7 +4,7 @@ public class Fib {
 
 	public int result;
 	
-	public int fib(int n) {
+	private int fib(int n) {
 		int cur = 0, next = 1;
 		for (int i = 0; i < n; ++i) {
 			int tmp = cur;
